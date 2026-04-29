@@ -34,7 +34,7 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
           {project.title}
         </h3>
 
-        <p className="display-italic text-xl md:text-2xl text-bone-200 leading-tight max-w-md">
+        <p className="text-xl md:text-2xl text-bone-200 leading-snug max-w-md italic font-light tracking-wide">
           {project.tagline}
         </p>
       </div>

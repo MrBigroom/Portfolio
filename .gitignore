@@ -36,3 +36,12 @@ yarn-error.log*
 next-env.d.ts
 
 README.md
+AGENTS.md
+CLAUDE.md
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/
+.claude/

@@ -90,6 +90,7 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  padding-right: 0.08em;
 }
 
 /* Marquee */
