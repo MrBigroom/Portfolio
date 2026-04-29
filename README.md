@@ -1,4 +1,4 @@
-# Chan — Portfolio
+# Chan Yu Xuan — Portfolio
 
 A bold, editorial portfolio site built with Next.js 15, Tailwind CSS, and Framer Motion.
 
