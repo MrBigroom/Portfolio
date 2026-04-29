@@ -1,0 +1,140 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-ink: #0a0a0b;
+  --color-bone: #f5f3ee;
+  --color-lime: #d8ff3d;
+  --color-magenta: #ff2d8a;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-bone);
+  font-family: "Inter Tight", sans-serif;
+  font-feature-settings: "ss01", "ss02";
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: var(--color-lime);
+  color: var(--color-ink);
+}
+
+/* Grain overlay */
+.grain::before {
+  content: "";
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 100;
+  animation: grain 8s steps(10) infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-ink);
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a30;
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-lime);
+}
+
+/* Display headlines */
+.display {
+  font-family: "Fraunces", serif;
+  font-variation-settings: "opsz" 144;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+
+.display-italic {
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-variation-settings: "opsz" 144;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+
+.mono {
+  font-family: "JetBrains Mono", monospace;
+  font-feature-settings: "calt", "liga";
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(120deg, var(--color-lime) 0%, var(--color-magenta) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Marquee */
+.marquee-track {
+  animation: marquee 40s linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Magnetic link hover */
+.magnetic {
+  position: relative;
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.magnetic::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-lime);
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.magnetic:hover::after {
+  width: 100%;
+}
+
+/* Decorative noise dot */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-lime);
+  display: inline-block;
+}
+
+/* Animated underline */
+@keyframes ticker {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
