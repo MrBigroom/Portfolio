@@ -84,7 +84,7 @@ export const projects: Project[] = [
   },
   {
     index: "05",
-    title: "DriveLane Car Rental",
+    title: "SOCAR Car Rental",
     tagline: "A full PHP/MySQL booking platform with payments and maps.",
     description:
       "A car rental web application built end-to-end: HTML/CSS/JS frontend, PHP backend, MySQL database, with Google Maps API for branch and vehicle locations and Stripe for payment processing. Designed the schema, server-side logic, and the full customer booking flow.",
