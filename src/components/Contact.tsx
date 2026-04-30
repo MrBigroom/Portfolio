@@ -50,7 +50,7 @@ export default function Contact() {
         {/* Social row */}
         <div className="mt-20 flex flex-wrap justify-center gap-6 md:gap-12 mono text-xs uppercase tracking-[0.3em]">
           <a href="https://github.com/MrBigroom" className="magnetic">GitHub ↗</a>
-          <a href="[linkedin-url]" className="magnetic">LinkedIn ↗</a>
+          <a href="www.linkedin.com/in/chan-yu-xuan-244a5a400" className="magnetic">LinkedIn ↗</a>
           <a href="mailto:chanyuxuan21@gmail.com" className="magnetic">Email ↗</a>
         </div>
       </motion.div>

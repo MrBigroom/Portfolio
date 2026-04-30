@@ -10,6 +10,7 @@ export type Project = {
   highlights: string[];
   links?: { label: string; url: string }[];
   accent: "lime" | "magenta";
+  image?: string;
 };
 
 export const projects: Project[] = [

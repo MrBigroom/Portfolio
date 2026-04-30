@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { projects, type Project } from "@/data/projects";
 
@@ -41,6 +42,21 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
 
       {/* Right column: description, tech, highlights */}
       <div className="md:col-span-7 space-y-8">
+        {project.image && (
+          <div className={`relative w-full overflow-hidden rounded-sm border ${
+            project.accent === "lime" ? "border-lime/20" : "border-magenta/20"
+          } shadow-[0_4px_32px_rgba(0,0,0,0.45)]`}>
+            <Image
+              src={project.image}
+              alt={`${project.title} screenshot`}
+              width={1280}
+              height={800}
+              className="w-full h-auto object-cover"
+              sizes="(max-width: 768px) 100vw, 58vw"
+            />
+          </div>
+        )}
+
         <p className="text-lg leading-relaxed text-bone-100">
           {project.description}
         </p>
