@@ -2,7 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Chan — Full-stack & AI Engineer",
+  title: "Chan Yu Xuan — Full-stack & AI Engineer",
   description:
     "Portfolio of Chan Yu Xuan, a Bachelor of IT student at Quest International University. Building full-stack and AI-integrated applications across web, mobile and ML.",
   metadataBase: new URL("https://chan-portfolio.vercel.app"),
