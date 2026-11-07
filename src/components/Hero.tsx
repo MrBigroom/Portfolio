@@ -41,11 +41,11 @@ export default function Hero() {
         </motion.div>
         <motion.div variants={item}>
           <span className="block text-bone-300/60">Discipline</span>
-          <span className="text-bone-50">Full-stack / AI</span>
+          <span className="text-bone-50">Applied AI / Platform</span>
         </motion.div>
         <motion.div variants={item}>
           <span className="block text-bone-300/60">Status</span>
-          <span className="text-lime">● Open to internships</span>
+          <span className="text-lime">● Open to AI Platform Engineer roles</span>
         </motion.div>
       </motion.div>
 
@@ -85,9 +85,10 @@ export default function Hero() {
       >
         <div className="md:col-span-7">
           <p className="text-lg md:text-xl text-bone-100 max-w-2xl leading-relaxed">
-            I'm <span className="text-lime">Chan Yu Xuan</span> - a Bachelor of IT student at Quest
-            International University, building full-stack apps that integrate machine
-            learning, computer vision and LLMs into actually-useful products.
+            I'm <span className="text-lime">Chan Yu Xuan</span> — a final-year IT student, four
+            months into building AI systems that actually ship: render orchestration for a
+            livestreaming platform at <span className="text-magenta">SNS Network</span>, local
+            inference squeezed onto an 8 GB card, and the harnesses that keep the loop honest.
           </p>
         </div>
         <div className="md:col-span-3 md:col-start-10">

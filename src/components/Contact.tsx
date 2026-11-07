@@ -22,7 +22,7 @@ export default function Contact() {
         className="text-center"
       >
         <div className="mono text-xs uppercase tracking-[0.3em] text-bone-300 mb-8">
-          <span className="text-lime">§ 05</span> &mdash; Let's talk
+          <span className="text-lime">§ 06</span> &mdash; Let's talk
         </div>
 
         <motion.h2

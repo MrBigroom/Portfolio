@@ -30,31 +30,32 @@ export default function About() {
             className="space-y-12"
           >
             <h2 className="display text-4xl md:text-6xl leading-[1.05]">
-              I build at the intersection of <span className="display-italic text-lime">full-stack engineering</span> and <span className="display-italic text-magenta">applied AI</span>.
+              I build and operate the systems that put <span className="display-italic text-magenta">models</span> in front of <span className="display-italic text-lime">real users</span>.
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-lg leading-relaxed text-bone-100">
               <p>
-                My work usually involves shipping a real product end-to-end, from designing
-                the database, writing the backend, building the interface, and then
-                threading machine learning or LLMs through it where they actually add
-                value, not just for the demo.
+                Since July I've been the engineer behind one component of a livestream-commerce
+                platform at SNS Network — the creator studio, the viewer, and the orchestration
+                layer that turns a script into a rendered stream across seven GPU services. That
+                means serving and selecting models, per-stage state and retries, and enough test
+                coverage to change a pipeline stage without dreading Friday.
               </p>
               <p>
-                Recent work spans a finance app with a Python ML microservice for
-                transaction categorization, a Flutter app with on-device pose detection,
-                and an LLM-powered Discord bot built on Gemini. I care about clean
-                architecture, honest evaluation and the boring parts that make a system
-                actually work.
+                Outside that, the work is mostly about the seams: an agent orchestration harness
+                that coordinates coding models through artifacts instead of chat, a RAG booking
+                agent running entirely on my laptop with no inbound ports, and a 124 GB model
+                library served off one 8 GB card. I care about failure modes, honest evaluation,
+                and the boring parts that let a system survive contact with users.
               </p>
             </div>
 
             {/* Stats grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-12 border-t border-bone-50/10">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-12 border-t border-bone-50/10">
               {[
-                { num: "5+", label: "Shipped projects" },
-                { num: "6", label: "Languages" },
-                { num: "∞", label: "Open tabs" },
+                { num: "7", label: "GPU services orchestrated" },
+                { num: "3,650", label: "Tests in that platform" },
+                { num: "124 GB", label: "Of models served locally" },
                 { num: "2026", label: "Graduating" },
               ].map((stat, i) => (
                 <div key={i}>

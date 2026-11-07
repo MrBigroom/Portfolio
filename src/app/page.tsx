@@ -2,6 +2,7 @@ import Hero from "@/components/Hero";
 import Marquee from "@/components/Marquee";
 import About from "@/components/About";
 import Projects from "@/components/Projects";
+import InferenceLab from "@/components/InferenceLab";
 import Skills from "@/components/Skills";
 import Contact from "@/components/Contact";
 import Nav from "@/components/Nav";
@@ -15,6 +16,7 @@ export default function Home() {
       <Marquee />
       <About />
       <Projects />
+      <InferenceLab />
       <Skills />
       <Contact />
       <Footer />

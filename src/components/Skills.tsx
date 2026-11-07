@@ -9,7 +9,7 @@ export default function Skills() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
         <div className="md:col-span-3">
           <div className="mono text-xs uppercase tracking-[0.3em] text-bone-300 sticky top-32">
-            <span className="block text-lime mb-2">§ 04</span>
+            <span className="block text-lime mb-2">§ 05</span>
             Toolkit
           </div>
         </div>

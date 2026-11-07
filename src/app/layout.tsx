@@ -2,10 +2,10 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Chan Yu Xuan — Full-stack & AI Engineer",
+  title: "Chan Yu Xuan — AI Platform Engineer",
   description:
-    "Portfolio of Chan Yu Xuan, a Bachelor of IT student at Quest International University. Building full-stack and AI-integrated applications across web, mobile and ML.",
-  metadataBase: new URL("https://chan-portfolio.vercel.app"),
+    "Portfolio of Chan Yu Xuan — AI platform engineer. Render orchestration across seven GPU services at SNS Network, a control plane for coding agents, local-first RAG on an 8 GB card, and 124 GB of models served off one consumer GPU.",
+  metadataBase: new URL("https://portfolio-five-khaki-60.vercel.app"),
 };
 
 export default function RootLayout({

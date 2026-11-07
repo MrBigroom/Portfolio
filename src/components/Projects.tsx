@@ -7,7 +7,13 @@ import { projects, type Project } from "@/data/projects";
 function ProjectCard({ project, idx }: { project: Project; idx: number }) {
   const isEven = idx % 2 === 0;
   const accentColor = project.accent === "lime" ? "text-lime" : "text-magenta";
-  const accentBg = project.accent === "lime" ? "bg-lime" : "bg-magenta";
+  const accentBorder =
+    project.accent === "lime" ? "border-lime/20" : "border-magenta/20";
+  // The kind line already names the engagement, so the badge only earns its
+  // place when it adds something the kind line doesn't say.
+  const showStatus = !project.kind
+    .toLowerCase()
+    .includes(project.status.toLowerCase());
 
   return (
     <motion.article
@@ -15,23 +21,36 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-      className={`relative grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 py-16 md:py-24 border-t border-bone-50/10 ${
-        !isEven ? "md:[&>*:first-child]:order-2" : ""
+      className={`relative grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 py-16 md:py-24 border-t border-bone-50/10 ${
+        !isEven ? "lg:[&>*:first-child]:order-2" : ""
       }`}
     >
       {/* Left column: index + title */}
-      <div className="md:col-span-5">
-        <div className="flex items-center gap-4 mb-6">
+      <div className="lg:col-span-5 min-w-0">
+        <div className="flex flex-wrap items-center gap-4 mb-6">
           <span className={`mono text-xs ${accentColor}`}>● {project.index}</span>
           <span className="mono text-xs text-bone-300 uppercase tracking-widest">
             {project.year}
           </span>
-          <span className={`mono text-xs uppercase tracking-widest border border-bone-50/20 px-2 py-1 ${accentColor}`}>
-            {project.status}
-          </span>
+          {showStatus && (
+            <span
+              className={`mono text-xs uppercase tracking-widest border border-bone-50/20 px-2 py-1 ${accentColor}`}
+            >
+              {project.status}
+            </span>
+          )}
+          {project.featured && (
+            <span className="mono text-xs uppercase tracking-widest bg-lime text-ink-950 px-2 py-1">
+              Featured
+            </span>
+          )}
         </div>
 
-        <h3 className="display text-5xl md:text-7xl leading-none mb-4">
+        <div className="mono text-[10px] uppercase tracking-[0.2em] text-bone-300/80 mb-3">
+          {project.kind}
+        </div>
+
+        <h3 className="display text-5xl lg:text-6xl xl:text-7xl leading-none mb-4 break-words">
           {project.title}
         </h3>
 
@@ -40,19 +59,19 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
         </p>
       </div>
 
-      {/* Right column: description, tech, highlights */}
-      <div className="md:col-span-7 space-y-8">
+      {/* Right column: description, highlights, metrics, tech */}
+      <div className="lg:col-span-7 space-y-8 min-w-0">
         {project.image && (
-          <div className={`relative w-full overflow-hidden rounded-sm border ${
-            project.accent === "lime" ? "border-lime/20" : "border-magenta/20"
-          } shadow-[0_4px_32px_rgba(0,0,0,0.45)]`}>
+          <div
+            className={`relative w-full overflow-hidden rounded-sm border ${accentBorder} shadow-[0_4px_32px_rgba(0,0,0,0.45)]`}
+          >
             <Image
               src={project.image}
-              alt={`${project.title} screenshot`}
-              width={1280}
-              height={800}
+              alt={project.imageAlt ?? `${project.title} screenshot`}
+              width={project.imageW ?? 1280}
+              height={project.imageH ?? 800}
               className="w-full h-auto object-cover"
-              sizes="(max-width: 768px) 100vw, 58vw"
+              sizes="(max-width: 1024px) 100vw, 58vw"
             />
           </div>
         )}
@@ -74,6 +93,22 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
           ))}
         </ul>
 
+        {/* Metrics */}
+        {project.metrics.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6 border-y border-bone-50/10">
+            {project.metrics.map((m) => (
+              <div key={m.label}>
+                <div className="display text-2xl md:text-3xl text-bone-50 mb-1">
+                  {m.value}
+                </div>
+                <div className="mono text-[10px] uppercase tracking-[0.15em] text-bone-300">
+                  {m.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Tech stack */}
         <div className="flex flex-wrap gap-2 pt-2">
           {project.tech.map((t) => (
@@ -86,10 +121,31 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
           ))}
         </div>
 
-        {/* Role */}
-        <div className="mono text-xs uppercase tracking-[0.2em] text-bone-300 pt-2">
-          <span className="text-bone-300/60">Role / </span>
-          {project.role}
+        {/* Role + access */}
+        <div className="mono text-xs uppercase tracking-[0.2em] text-bone-300 pt-2 space-y-2">
+          <div>
+            <span className="text-bone-300/60">Role / </span>
+            {project.role}
+          </div>
+          {project.access && (
+            <div className={accentColor}>
+              <span className="text-bone-300/60">Code / </span>
+              {project.access}
+            </div>
+          )}
+          {project.links && project.links.length > 0 && (
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              {project.links.map((l) => (
+                <a
+                  key={l.url}
+                  href={l.url}
+                  className="magnetic hover:text-lime transition-colors"
+                >
+                  {l.label} ↗
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </motion.article>
@@ -116,7 +172,9 @@ export default function Projects() {
         <div className="md:col-span-9">
           <h2 className="display text-5xl md:text-7xl leading-[0.95]">
             Five projects, <br />
-            <span className="display-italic">all built end-to-end.</span>
+            <span className="display-italic">
+              each one a system, not a demo.
+            </span>
           </h2>
         </div>
       </motion.div>
