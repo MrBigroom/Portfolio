@@ -18,18 +18,25 @@ const marqueeItems = [
 ];
 
 export default function Marquee() {
-  // Duplicate for seamless loop
   const items = [...marqueeItems, ...marqueeItems];
 
   return (
-    <div className="relative py-6 md:py-8 border-y border-bone-50/10 overflow-hidden bg-ink-900">
-      <div className="flex marquee-track whitespace-nowrap">
-        {items.map((item, i) => (
+    <div className="marquee relative overflow-hidden border-y border-brass-700/25 bg-void-900/40 py-5 md:py-6">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 bg-gradient-to-r from-void-950 to-transparent md:w-40"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-20 bg-gradient-to-l from-void-950 to-transparent md:w-40"
+      />
+      <div className="marquee-track flex w-max items-center whitespace-nowrap">
+        {items.map((item, index) => (
           <span
-            key={i}
-            className={`display text-3xl md:text-5xl px-6 ${
-              item === "✦" ? "text-lime" : "text-bone-50/80"
-            } ${i % 4 === 0 ? "display-italic" : ""}`}
+            key={`${item}-${index}`}
+            className={`display px-5 text-xl md:text-2xl ${
+              item === "✦" ? "text-ember-500" : "text-bone-200/85"
+            } ${index % 4 === 0 ? "display-italic" : ""}`}
           >
             {item}
           </span>

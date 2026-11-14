@@ -1,56 +1,60 @@
 "use client";
 
-import { motion } from "framer-motion";
+import Reveal from "@/components/ui/Reveal";
+import SectionLabel from "@/components/ui/SectionLabel";
+import { FlameMark } from "@/components/ui/Ornament";
 import { skills } from "@/data/projects";
+
+const SLOT = ["I", "II", "III", "IV", "V", "VI"];
 
 export default function Skills() {
   return (
-    <section className="relative px-6 md:px-12 py-32 md:py-48 bg-ink-900 border-y border-bone-50/10">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+    <section id="arsenal" className="relative px-6 py-28 md:px-12 md:py-40">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-12">
         <div className="md:col-span-3">
-          <div className="mono text-xs uppercase tracking-[0.3em] text-bone-300 sticky top-32">
-            <span className="block text-lime mb-2">§ 05</span>
-            Toolkit
-          </div>
+          <SectionLabel numeral="V" chapter="The Armoury" />
         </div>
-        <div className="md:col-span-9">
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="display text-4xl md:text-6xl mb-16 leading-[1.05]"
-          >
-            What I reach for, <br />
-            <span className="display-italic">and what I'm currently learning</span>.
-          </motion.h2>
 
-          <div className="space-y-12">
-            {Object.entries(skills).map(([category, items], i) => (
-              <motion.div
-                key={category}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="grid grid-cols-1 md:grid-cols-12 gap-4 pb-8 border-b border-bone-50/10"
-              >
-                <div className="md:col-span-3">
-                  <h3 className="display-italic text-2xl text-lime">{category}</h3>
-                </div>
-                <div className="md:col-span-9">
-                  <div className="flex flex-wrap gap-x-6 gap-y-2">
-                    {items.map((item) => (
+        <div className="md:col-span-9">
+          <Reveal>
+            <h2 className="display text-3xl leading-[1.04] text-bone-50 sm:text-4xl md:text-5xl lg:text-6xl">
+              What I reach for, <br />
+              <span className="display-italic text-bone-200">
+                and what I&rsquo;m currently learning
+              </span>
+              .
+            </h2>
+          </Reveal>
+
+          <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {Object.entries(skills).map(([category, items], index) => (
+              <Reveal key={category} delay={index * 0.06} className="h-full">
+                <div className="group relative h-full border border-brass-700/25 p-5 transition-colors duration-500 hover:border-ember-400/40 hover:bg-ember-400/[0.02] md:p-6">
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-[3px] border border-brass-500/[0.07]"
+                  />
+                  <div className="relative flex items-center justify-between">
+                    <span className="display text-[10px] tracking-[0.3em] text-ember-300">
+                      {SLOT[index] ?? String(index + 1).padStart(2, "0")}
+                    </span>
+                    <FlameMark className="h-3 w-3 text-brass-500/40 transition-colors duration-500 group-hover:text-ember-400" />
+                  </div>
+                  <h3 className="display-italic relative mt-4 text-2xl text-bone-50">
+                    {category}
+                  </h3>
+                  <div className="relative mt-4 flex flex-wrap gap-2">
+                    {items.map((skill) => (
                       <span
-                        key={item}
-                        className="text-xl md:text-2xl text-bone-100 hover:text-lime transition-colors cursor-default"
+                        key={skill}
+                        className="border border-brass-700/30 px-2.5 py-1 text-[0.95rem] leading-tight text-bone-200 transition-colors duration-300 hover:border-ember-400/50 hover:bg-ember-400/[0.05] hover:text-ember-100"
                       >
-                        {item}
+                        {skill}
                       </span>
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </Reveal>
             ))}
           </div>
         </div>

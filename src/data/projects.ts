@@ -25,7 +25,10 @@ export type Project = {
   access?: string;
   featured?: boolean;
   links?: { label: string; url: string }[];
-  accent: "lime" | "magenta";
+  /** Which flame this card burns with. */
+  accent: "ember" | "blood";
+  /** A line of flavour, printed under the item description. */
+  flavour?: string;
   image?: string;
   /** Intrinsic pixel size of `image`, so the card can preserve its aspect ratio. */
   imageW?: number;
@@ -41,6 +44,8 @@ export const projects: Project[] = [
     kind: "Internship · SNS Network · Jul 2026 – Present",
     tagline:
       "A creator writes a script, picks an avatar, and publishes a livestream that renders itself.",
+    flavour:
+      "A flame that wears a face. Seven furnaces answer to it, and a script becomes a body that speaks.",
     description:
       "Built inside SNS Network as Component 3 of a livestream-commerce platform. A creator generates a product script with an LLM, chooses an avatar, action set and cloned voice, then publishes a pre-rendered live session that viewers watch while chatting in real time. I own the FastAPI/PostgreSQL backend, the render-orchestration service that drives seven GPU services, and the creator and viewer front ends.",
     role: "Platform engineer — backend, render orchestration, creator & viewer UI",
@@ -76,7 +81,7 @@ export const projects: Project[] = [
     ],
     access: "Private · walkthrough on request",
     featured: true,
-    accent: "lime",
+    accent: "ember",
     image: "/shots/avatar-xiaomi-live.jpg",
     imageW: 1791,
     imageH: 878,
@@ -88,6 +93,8 @@ export const projects: Project[] = [
     title: "Coding Orchestration Agent Harness",
     kind: "Personal R&D · Oct 2026 – Present",
     tagline: "A control plane that makes coding agents show their work.",
+    flavour:
+      "The work must leave a trail, not a whisper. Where it passed, the ash still remembers the shape of it.",
     description:
       "A local-first orchestrator for an Architect → Supervisor → Worker loop. It drives headless coding CLIs and model APIs through a state machine and artifacts — worktree-isolated phase branches, handoff.json, review.json, verification.json, a JSONL build log and gated merges — so an agent run leaves evidence instead of a transcript.",
     role: "Solo — architecture, backend, CLI and GUI",
@@ -118,13 +125,15 @@ export const projects: Project[] = [
       { value: "8", label: "harness adapters" },
     ],
     access: "Private · walkthrough on request",
-    accent: "magenta",
+    accent: "blood",
   },
   {
     index: "03",
     title: "Allie",
     kind: "Personal · built for a working photography business · Oct 2026",
     tagline: "A booking agent that runs on one laptop and never publishes a port.",
+    flavour:
+      "A hearth that never opens its door. It answers the ones it knows, and only when it chooses to.",
     description:
       "A WhatsApp and Telegram assistant for a working photography business. It answers pricing and package questions from the business's own documents, captures bookings, collects payment-receipt photos, and hands off to an admin dashboard that issues PDFs and returns photos. The LLM, embeddings and WhatsApp bridge run on one machine with an 8 GB GPU; the cloud side reaches it only by polling.",
     role: "Solo — LLM serving, RAG, agent loop, WhatsApp bridge, dashboard",
@@ -154,13 +163,15 @@ export const projects: Project[] = [
       { value: "0", label: "inbound ports" },
     ],
     access: "Private · details on request",
-    accent: "lime",
+    accent: "ember",
   },
   {
     index: "04",
     title: "AuraFit",
     kind: "Final-year project · Quest International University",
     tagline: "Real-time AR pose detection for at-home workouts.",
+    flavour:
+      "The mirror teaches the body. No server stands behind the glass — the judgement is made where you stand.",
     description:
       "A Flutter mobile app that uses on-device computer vision to track body pose in real time and give feedback on exercise form, built around a custom pose-detection pipeline wired into the Flutter rendering loop.",
     role: "Solo lead",
@@ -178,7 +189,7 @@ export const projects: Project[] = [
       { value: "Offline", label: "by design" },
       { value: "2026", label: "final year" },
     ],
-    accent: "magenta",
+    accent: "blood",
   },
   {
     index: "05",
@@ -186,6 +197,8 @@ export const projects: Project[] = [
     kind: "Personal · in development",
     tagline:
       "An RPG productivity app that makes deep work feel like a dungeon run.",
+    flavour:
+      "A dungeon made for the desk-bound. Its deepest reward is an hour you chose not to abandon.",
     description:
       "A desktop productivity app that gamifies focused work with Pomodoro mechanics, XP and levelling, dungeon-run sessions, and social co-focus parties — built cross-platform on Tauri with a real-time backend on Supabase and LiveKit.",
     role: "Solo lead",
@@ -203,7 +216,7 @@ export const projects: Project[] = [
       { value: "Supabase", label: "auth + presence" },
       { value: "2026", label: "in development" },
     ],
-    accent: "lime",
+    accent: "ember",
   },
 ];
 

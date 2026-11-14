@@ -1,59 +1,78 @@
 "use client";
 
-import { motion } from "framer-motion";
+import Reveal from "@/components/ui/Reveal";
+import { Divider } from "@/components/ui/Ornament";
 
 export default function Contact() {
   return (
     <section
       id="contact"
-      className="relative px-6 md:px-12 py-32 md:py-48 overflow-hidden"
+      className="relative overflow-hidden px-6 py-28 md:px-12 md:py-40"
     >
-      {/* Atmosphere */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute bottom-0 left-1/4 w-[800px] h-[400px] rounded-full bg-lime/5 blur-[120px]" />
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-magenta/10 blur-[120px]" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div className="ember-glow absolute bottom-0 left-1/2 h-[26rem] w-[46rem] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(50%_50%_at_50%_50%,rgba(255,122,43,0.13),transparent_70%)] blur-2xl" />
+        <div className="absolute right-0 top-0 h-[26rem] w-[26rem] rounded-full bg-[radial-gradient(circle,rgba(147,140,130,0.07),transparent_70%)]" />
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1 }}
-        className="text-center"
-      >
-        <div className="mono text-xs uppercase tracking-[0.3em] text-bone-300 mb-8">
-          <span className="text-lime">§ 06</span> &mdash; Let's talk
+      <div className="relative mx-auto max-w-5xl text-center">
+        <div className="engraved flex items-center justify-center gap-4 text-[10px] text-bone-300">
+          <span aria-hidden className="h-px w-10 bg-brass-700/50" />
+          <span className="text-ember-300">VI</span> · A Summons
+          <span aria-hidden className="h-px w-10 bg-brass-700/50" />
         </div>
 
-        <motion.h2
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="display text-[12vw] md:text-[8vw] leading-[0.85] mb-12"
-        >
-          Got a project? <br />
-          <span className="display-italic gradient-text">Let's build it.</span>
-        </motion.h2>
+        <Reveal>
+          <h2 className="display mt-8 text-[10.5vw] leading-[0.94] text-bone-50 sm:text-[8vw] md:text-[6.2vw]">
+            Got a project? <br />
+            <span className="display-italic ember-text">
+              Let&rsquo;s build it.
+            </span>
+          </h2>
+        </Reveal>
 
-        <motion.a
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          href="mailto:chanyuxuan21@gmail.com"
-          className="inline-block display-italic text-3xl md:text-5xl text-lime hover:text-magenta transition-colors duration-500"
-        >
-          chanyuxuan21@gmail.com →
-        </motion.a>
+        <Reveal delay={0.12}>
+          <a
+            href="mailto:chanyuxuan21@gmail.com"
+            className="display-italic mt-10 inline-block break-all text-2xl text-ember-200 transition-colors duration-500 hover:text-ember-100 md:mt-14 md:text-4xl"
+          >
+            chanyuxuan21@gmail.com →
+          </a>
+        </Reveal>
 
-        {/* Social row */}
-        <div className="mt-20 flex flex-wrap justify-center gap-6 md:gap-12 mono text-xs uppercase tracking-[0.3em]">
-          <a href="https://github.com/MrBigroom" className="magnetic">GitHub ↗</a>
-          <a href="https://linkedin.com/in/chan-yu-xuan-244a5a400" className="magnetic">LinkedIn ↗</a>
-          <a href="mailto:chanyuxuan21@gmail.com" className="magnetic">Email ↗</a>
+        <Reveal delay={0.18}>
+          <p className="display-italic mt-6 text-lg text-bone-300/80">
+            Leave a sign, and the flame will answer.
+          </p>
+        </Reveal>
+
+        <Divider className="mx-auto my-12 h-4 w-full max-w-2xl md:my-14" />
+
+        <div className="flex flex-wrap justify-center gap-x-10 gap-y-4">
+          <a
+            href="https://github.com/MrBigroom"
+            className="magnetic engraved text-[10px] text-bone-200 transition-colors hover:text-ember-200"
+          >
+            GitHub ↗
+          </a>
+          <a
+            href="https://linkedin.com/in/chan-yu-xuan-244a5a400"
+            className="magnetic engraved text-[10px] text-bone-200 transition-colors hover:text-ember-200"
+          >
+            LinkedIn ↗
+          </a>
+          <a
+            href="mailto:chanyuxuan21@gmail.com"
+            className="magnetic engraved text-[10px] text-bone-200 transition-colors hover:text-ember-200"
+          >
+            Email ↗
+          </a>
         </div>
-      </motion.div>
+
+        <div
+          aria-hidden
+          className="ember-glow mx-auto mt-14 h-16 w-[18rem] rounded-[50%] border border-ember-500/20 bg-[radial-gradient(50%_50%_at_50%_50%,rgba(255,122,43,0.1),transparent_72%)]"
+        />
+      </div>
     </section>
   );
 }

@@ -7,11 +7,13 @@ import Skills from "@/components/Skills";
 import Contact from "@/components/Contact";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import EstusHud from "@/components/ui/EstusHud";
 
 export default function Home() {
   return (
-    <main className="relative">
+    <main id="top" className="relative z-10">
       <Nav />
+      <EstusHud />
       <Hero />
       <Marquee />
       <About />

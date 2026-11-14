@@ -2,187 +2,248 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import Reveal from "@/components/ui/Reveal";
+import SectionLabel from "@/components/ui/SectionLabel";
+import CountUp from "@/components/ui/CountUp";
+import { FlameMark } from "@/components/ui/Ornament";
 import { projects, type Project } from "@/data/projects";
 
+const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
+
+const cornerTicks = [
+  "left-0 top-0 border-l border-t",
+  "right-0 top-0 border-r border-t",
+  "left-0 bottom-0 border-l border-b",
+  "right-0 bottom-0 border-r border-b",
+];
+
+function Corners() {
+  return (
+    <>
+      {cornerTicks.map((corner) => (
+        <span
+          key={corner}
+          aria-hidden
+          className={`pointer-events-none absolute z-20 h-3 w-3 border-brass-300/50 ${corner}`}
+        />
+      ))}
+    </>
+  );
+}
+
 function ProjectCard({ project, idx }: { project: Project; idx: number }) {
-  const isEven = idx % 2 === 0;
-  const accentColor = project.accent === "lime" ? "text-lime" : "text-magenta";
-  const accentBorder =
-    project.accent === "lime" ? "border-lime/20" : "border-magenta/20";
-  // The kind line already names the engagement, so the badge only earns its
-  // place when it adds something the kind line doesn't say.
+  const reversed = idx % 2 === 1;
+  const accentText =
+    project.accent === "ember" ? "text-ember-300" : "text-blood-400";
+  const accentLine =
+    project.accent === "ember"
+      ? "from-ember-500/70 via-ember-400/20"
+      : "from-blood-500/70 via-blood-400/20";
   const showStatus = !project.kind
     .toLowerCase()
     .includes(project.status.toLowerCase());
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-      className={`relative grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 py-16 md:py-24 border-t border-bone-50/10 ${
-        !isEven ? "lg:[&>*:first-child]:order-2" : ""
-      }`}
-    >
-      {/* Left column: index + title */}
-      <div className="lg:col-span-5 min-w-0">
-        <div className="flex flex-wrap items-center gap-4 mb-6">
-          <span className={`mono text-xs ${accentColor}`}>● {project.index}</span>
-          <span className="mono text-xs text-bone-300 uppercase tracking-widest">
-            {project.year}
+    <Reveal y={36}>
+      <article className="item-card relative px-5 py-10 md:px-10 md:py-14">
+        <Corners />
+        <span
+          aria-hidden
+          className={`pointer-events-none absolute inset-y-0 left-0 w-px bg-gradient-to-b to-transparent ${accentLine}`}
+        />
+
+        {/* Item header */}
+        <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 border-b border-brass-700/25 pb-4">
+          <div className="flex items-center gap-3">
+            <span
+              className={`display text-sm tracking-[0.3em] ${accentText}`}
+            >
+              {ROMAN[idx] ?? project.index}
+            </span>
+            <span aria-hidden className="h-px w-6 bg-brass-700/50" />
+            <span className="mono text-[10px] uppercase tracking-[0.2em] text-bone-300">
+              {project.year}
+            </span>
+            {showStatus && (
+              <span className="engraved border border-brass-700/40 px-2 py-1 text-[8px] text-bone-200">
+                {project.status}
+              </span>
+            )}
+            {project.featured && (
+              <span className="engraved bg-ember-500 px-2 py-1 text-[8px] text-void-950">
+                Heir of Fire
+              </span>
+            )}
+          </div>
+          <span className="mono text-[9px] uppercase tracking-[0.2em] text-bone-300/50">
+            {project.index} / {String(projects.length).padStart(2, "0")}
           </span>
-          {showStatus && (
-            <span
-              className={`mono text-xs uppercase tracking-widest border border-bone-50/20 px-2 py-1 ${accentColor}`}
-            >
-              {project.status}
-            </span>
-          )}
-          {project.featured && (
-            <span className="mono text-xs uppercase tracking-widest bg-lime text-ink-950 px-2 py-1">
-              Featured
-            </span>
-          )}
         </div>
 
-        <div className="mono text-[10px] uppercase tracking-[0.2em] text-bone-300/80 mb-3">
-          {project.kind}
-        </div>
-
-        <h3 className="display text-5xl lg:text-6xl xl:text-7xl leading-none mb-4 break-words">
-          {project.title}
-        </h3>
-
-        <p className="text-xl md:text-2xl text-bone-200 leading-snug max-w-md italic font-light tracking-wide">
-          {project.tagline}
-        </p>
-      </div>
-
-      {/* Right column: description, highlights, metrics, tech */}
-      <div className="lg:col-span-7 space-y-8 min-w-0">
-        {project.image && (
+        <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
           <div
-            className={`relative w-full overflow-hidden rounded-sm border ${accentBorder} shadow-[0_4px_32px_rgba(0,0,0,0.45)]`}
+            className={`min-w-0 lg:col-span-5 ${reversed ? "lg:order-2" : ""}`}
           >
-            <Image
-              src={project.image}
-              alt={project.imageAlt ?? `${project.title} screenshot`}
-              width={project.imageW ?? 1280}
-              height={project.imageH ?? 800}
-              className="w-full h-auto object-cover"
-              sizes="(max-width: 1024px) 100vw, 58vw"
-            />
-          </div>
-        )}
-
-        <p className="text-lg leading-relaxed text-bone-100">
-          {project.description}
-        </p>
-
-        {/* Highlights */}
-        <ul className="space-y-2">
-          {project.highlights.map((h, i) => (
-            <li
-              key={i}
-              className="flex gap-3 text-sm text-bone-200 mono leading-relaxed"
-            >
-              <span className={accentColor}>→</span>
-              <span>{h}</span>
-            </li>
-          ))}
-        </ul>
-
-        {/* Metrics */}
-        {project.metrics.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6 border-y border-bone-50/10">
-            {project.metrics.map((m) => (
-              <div key={m.label}>
-                <div className="display text-2xl md:text-3xl text-bone-50 mb-1">
-                  {m.value}
-                </div>
-                <div className="mono text-[10px] uppercase tracking-[0.15em] text-bone-300">
-                  {m.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Tech stack */}
-        <div className="flex flex-wrap gap-2 pt-2">
-          {project.tech.map((t) => (
-            <span
-              key={t}
-              className="mono text-[10px] uppercase tracking-widest border border-bone-50/20 px-3 py-1.5 hover:border-bone-50/60 transition-colors"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-
-        {/* Role + access */}
-        <div className="mono text-xs uppercase tracking-[0.2em] text-bone-300 pt-2 space-y-2">
-          <div>
-            <span className="text-bone-300/60">Role / </span>
-            {project.role}
-          </div>
-          {project.access && (
-            <div className={accentColor}>
-              <span className="text-bone-300/60">Code / </span>
-              {project.access}
+            <div className="engraved text-[9px] text-bone-300/80">
+              {project.kind}
             </div>
-          )}
-          {project.links && project.links.length > 0 && (
-            <div className="flex flex-wrap gap-x-6 gap-y-2">
-              {project.links.map((l) => (
-                <a
-                  key={l.url}
-                  href={l.url}
-                  className="magnetic hover:text-lime transition-colors"
+
+            <h3 className="display mt-3 break-words text-3xl leading-[1.02] text-bone-50 sm:text-4xl xl:text-5xl">
+              {project.title}
+            </h3>
+
+            <p className="display-italic mt-5 max-w-md text-xl leading-snug text-bone-100 md:text-2xl">
+              {project.tagline}
+            </p>
+
+            {project.flavour && (
+              <div className="mt-7 border-t border-brass-700/25 pt-4">
+                <div className="mono text-[9px] uppercase tracking-[0.24em] text-bone-300/50">
+                  Item description
+                </div>
+                <p className="display-italic mt-2 max-w-md text-lg leading-relaxed text-bone-200/85">
+                  {project.flavour}
+                </p>
+              </div>
+            )}
+
+            <div className="mt-8 max-w-xs">
+              <div className="relative h-[2px] w-full overflow-hidden bg-void-600">
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                  className="h-full w-full origin-left bg-gradient-to-r from-ember-600 via-ember-300 to-ember-600/10"
+                />
+              </div>
+              <div className="engraved mt-2 text-[8px] text-brass-500">
+                Flames tended
+              </div>
+            </div>
+          </div>
+
+          <div
+            className={`min-w-0 lg:col-span-7 ${reversed ? "lg:order-1" : ""}`}
+          >
+            {project.image && (
+              <div className="group relative overflow-hidden border border-brass-700/40 bg-void-900">
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 z-10 border border-brass-500/10"
+                />
+                <Image
+                  src={project.image}
+                  alt={project.imageAlt ?? `${project.title} screenshot`}
+                  width={project.imageW ?? 1280}
+                  height={project.imageH ?? 800}
+                  priority={idx === 0}
+                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  className="regrade h-auto w-full object-cover group-hover:scale-[1.02]"
+                />
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(7,6,5,0.55),transparent_48%)]"
+                />
+              </div>
+            )}
+
+            <p className="mt-8 text-[1.05rem] leading-relaxed text-bone-100">
+              {project.description}
+            </p>
+
+            <ul className="mt-6 space-y-3">
+              {project.highlights.map((highlight, index) => (
+                <li
+                  key={index}
+                  className="flex gap-3 text-sm leading-relaxed text-bone-200"
                 >
-                  {l.label} ↗
-                </a>
+                  <FlameMark className="mt-[0.15em] h-3 w-3 shrink-0 text-ember-500/80" />
+                  <span>{highlight}</span>
+                </li>
+              ))}
+            </ul>
+
+            {project.metrics.length > 0 && (
+              <div className="mt-8 grid grid-cols-2 gap-4 border-y border-brass-700/25 py-6 sm:grid-cols-4">
+                {project.metrics.map((metric) => (
+                  <div key={metric.label}>
+                    <div className="display text-2xl text-bone-50 md:text-3xl">
+                      <CountUp value={metric.value} />
+                    </div>
+                    <div className="engraved mt-1.5 text-[8px] text-bone-300/70">
+                      {metric.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              {project.tech.map((tech) => (
+                <span
+                  key={tech}
+                  className="mono border border-brass-700/35 px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-bone-200 transition-colors duration-300 hover:border-ember-400/60 hover:text-ember-200"
+                >
+                  {tech}
+                </span>
               ))}
             </div>
-          )}
+
+            <div className="mono mt-6 space-y-2 text-[11px] uppercase tracking-[0.18em] text-bone-300">
+              <div>
+                <span className="text-bone-300/50">Role / </span>
+                <span className="text-bone-200">{project.role}</span>
+              </div>
+              {project.access && (
+                <div className={accentText}>
+                  <span className="text-bone-300/50">Code / </span>
+                  {project.access}
+                </div>
+              )}
+              {project.links && project.links.length > 0 && (
+                <div className="flex flex-wrap gap-x-6 gap-y-2">
+                  {project.links.map((link) => (
+                    <a
+                      key={link.url}
+                      href={link.url}
+                      className="magnetic text-bone-300 transition-colors hover:text-ember-200"
+                    >
+                      {link.label} ↗
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-    </motion.article>
+      </article>
+    </Reveal>
   );
 }
 
 export default function Projects() {
   return (
-    <section id="work" className="relative px-6 md:px-12 py-24 md:py-32">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-16 md:mb-24"
-      >
+    <section id="work" className="relative px-6 py-24 md:px-12 md:py-32">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-12">
         <div className="md:col-span-3">
-          <div className="mono text-xs uppercase tracking-[0.3em] text-bone-300">
-            <span className="block text-lime mb-2">§ 03</span>
-            Selected Work
-          </div>
+          <SectionLabel numeral="III" chapter="Chronicle of Cinders" />
         </div>
         <div className="md:col-span-9">
-          <h2 className="display text-5xl md:text-7xl leading-[0.95]">
-            Five projects, <br />
-            <span className="display-italic">
-              each one a system, not a demo.
-            </span>
-          </h2>
+          <Reveal>
+            <h2 className="display text-3xl leading-[1.02] text-bone-50 sm:text-4xl md:text-5xl lg:text-6xl">
+              Five projects, <br />
+              <span className="display-italic text-bone-200">
+                each one a system, not a demo.
+              </span>
+            </h2>
+          </Reveal>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Projects */}
-      <div>
-        {projects.map((p, i) => (
-          <ProjectCard key={p.index} project={p} idx={i} />
+      <div className="mt-14 space-y-8 md:mt-20 md:space-y-10">
+        {projects.map((project, index) => (
+          <ProjectCard key={project.index} project={project} idx={index} />
         ))}
       </div>
     </section>
