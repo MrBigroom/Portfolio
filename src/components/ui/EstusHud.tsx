@@ -38,16 +38,13 @@ export default function EstusHud() {
           <g clipPath="url(#estus-body)">
             <rect x="0" y="0" width="36" height="48" fill="#141110" />
             <motion.rect
+              className="estus-fill"
               x="0"
               y="0"
               width="36"
               height="48"
               fill="url(#estus-liquid)"
-              style={{
-                scaleY: fill,
-                transformBox: "fill-box",
-                transformOrigin: "bottom",
-              }}
+              style={{ scaleY: fill }}
             />
           </g>
 

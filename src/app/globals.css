@@ -252,6 +252,13 @@ body {
   animation-play-state: paused;
 }
 
+/* Estus liquid: fills from the base, never from the middle. */
+.estus-fill {
+  transform-box: fill-box;
+  /* framer writes an inline transform-origin; this has to outrank it. */
+  transform-origin: 50% 100% !important;
+}
+
 /* Item cards: a warm rim that answers the cursor. */
 .item-card {
   position: relative;

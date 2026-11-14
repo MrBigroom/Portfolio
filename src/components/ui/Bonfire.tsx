@@ -23,52 +23,85 @@ import { EMBER_HUES, buildEmberSprite, clamp01 } from "@/lib/ember";
  * the helix of metal wound around it — highlighted where the coil passes in
  * front, dimmed where it passes behind, which is what gives it depth.
  */
-const BLADE = "M146 152h8l-1.8 266q-1.7 20-3.4 0z";
+type CoilRun = { d: string; centre: string; front: boolean };
 
-const COIL_TURNS = 4.4;
-const COIL_TOP = 200;
-const COIL_BOTTOM = 428;
-const COIL_AMPLITUDE = 17;
+const COIL_TURNS = 5.2;
+const COIL_TOP = 156;
+const COIL_BOTTOM = 432;
+const COIL_AMPLITUDE = 16;
+const COIL_WIDTH = 8.5;
 const COIL_STEPS = 240;
 
-type CoilRun = { d: string; front: boolean };
-
+/**
+ * The sword's blade *is* the coil — a tapered ribbon of metal spiralling around
+ * its own axis and closing to a point in the ash. Drawn as a filled ribbon
+ * rather than a stroked line so it can taper, and split into runs so the turns
+ * passing behind the axis can be shaded darker than the ones facing the fire.
+ */
 const COIL_RUNS: CoilRun[] = (() => {
   const points = Array.from({ length: COIL_STEPS + 1 }, (_, index) => {
     const t = index / COIL_STEPS;
     const angle = t * Math.PI * 2 * COIL_TURNS;
+    const taper = 1 - t;
     return {
-      x: 150 + Math.sin(angle) * COIL_AMPLITUDE * (0.5 + 0.5 * t),
-      y: COIL_TOP + (COIL_BOTTOM - COIL_TOP) * t + Math.cos(angle) * 3.5,
+      x: 150 + Math.sin(angle) * COIL_AMPLITUDE * (0.4 + 0.6 * taper),
+      y: COIL_TOP + (COIL_BOTTOM - COIL_TOP) * t + Math.cos(angle) * 4,
+      w: COIL_WIDTH * Math.pow(taper, 0.5) + 0.5,
       front: Math.cos(angle) > 0,
     };
   });
 
-  const runs: CoilRun[] = [];
-  let current: CoilRun | null = null;
+  const normal = (index: number) => {
+    const prev = points[Math.max(0, index - 1)];
+    const next = points[Math.min(points.length - 1, index + 1)];
+    const dx = next.x - prev.x;
+    const dy = next.y - prev.y;
+    const length = Math.hypot(dx, dy) || 1;
+    return { nx: -dy / length, ny: dx / length };
+  };
 
-  for (let index = 0; index < points.length; index += 1) {
-    const point = points[index];
-    const next = points[index + 1];
-
-    if (!current) {
-      current = { d: `M${point.x.toFixed(1)} ${point.y.toFixed(1)}`, front: point.front };
-    } else {
-      current.d += `L${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
-    }
-
-    // Overlap the join by one point so the coil does not visibly break.
-    if (next && next.front !== point.front) {
-      runs.push(current);
-      current = {
-        d: `M${point.x.toFixed(1)} ${point.y.toFixed(1)}`,
-        front: next.front,
-      };
+  const runs: { from: number; to: number; front: boolean }[] = [];
+  let from = 0;
+  for (let index = 1; index <= points.length; index += 1) {
+    if (
+      index === points.length ||
+      points[index].front !== points[from].front
+    ) {
+      runs.push({
+        from,
+        to: Math.min(index, points.length - 1),
+        front: points[from].front,
+      });
+      from = index;
     }
   }
 
-  if (current) runs.push(current);
-  return runs;
+  return runs.map(({ from: start, to, front }) => {
+    const left: string[] = [];
+    const right: string[] = [];
+    const centre: string[] = [];
+
+    for (let index = start; index <= to; index += 1) {
+      const point = points[index];
+      const { nx, ny } = normal(index);
+      const half = point.w / 2;
+      left.push(
+        `${index === start ? "M" : "L"}${(point.x + nx * half).toFixed(1)} ${(point.y + ny * half).toFixed(1)}`,
+      );
+      right.unshift(
+        `L${(point.x - nx * half).toFixed(1)} ${(point.y - ny * half).toFixed(1)}`,
+      );
+      centre.push(
+        `${index === start ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`,
+      );
+    }
+
+    return {
+      d: [...left, ...right, "Z"].join(""),
+      centre: centre.join(""),
+      front,
+    };
+  });
 })();
 
 type Bone = {
@@ -187,7 +220,7 @@ function BonfireFire({ className = "" }: { className?: string }) {
     const emberSprites = EMBER_HUES.map((hue) => buildEmberSprite(hue, 48));
 
     const mobile = window.matchMedia("(max-width: 767px)").matches;
-    const FLAME_MAX = mobile ? 90 : 190;
+    const FLAME_MAX = mobile ? 95 : 200;
     const EMBER_MAX = mobile ? 16 : 38;
     const SMOKE_MAX = mobile ? 7 : 14;
 
@@ -210,16 +243,18 @@ function BonfireFire({ className = "" }: { className?: string }) {
     const base = () => ({ x: width / 2, y: height * 0.955 });
 
     const spawnFlame = (): Cell => {
-      const spread = width * 0.088;
-      const bias = Math.random() * Math.random();
+      const spread = Math.max(1, width * 0.12);
+      const offset =
+        (Math.random() < 0.5 ? -1 : 1) * (0.3 + 0.7 * Math.random()) * spread;
+      const outer = Math.min(1, Math.abs(offset) / spread);
       return {
-        x: base().x + (Math.random() < 0.5 ? -1 : 1) * bias * spread,
+        x: base().x + offset,
         y: base().y - Math.random() * height * 0.018,
         vx: (Math.random() - 0.5) * 46,
         vy: -(150 + Math.random() * 130),
         size: (20 + Math.random() * 46) * unit,
         age: 0,
-        ttl: 0.62 + Math.random() * 0.45,
+        ttl: (0.9 + Math.random() * 0.55) * (1 - 0.18 * outer),
         seed: Math.random() * Math.PI * 2,
       };
     };
@@ -246,20 +281,28 @@ function BonfireFire({ className = "" }: { className?: string }) {
       seed: Math.random() * Math.PI * 2,
     });
 
-    const advance = (cell: Cell, delta: number, buoyancy: number, drag: number) => {
+    const advance = (
+      cell: Cell,
+      delta: number,
+      buoyancy: number,
+      drag: number,
+      gather: number,
+    ) => {
       cell.age += delta;
       const t = cell.age / cell.ttl;
       cell.vy -= buoyancy * delta;
-      cell.vx += Math.sin(cell.y * 0.021 + clock * 2.1 + cell.seed) * 74 * delta;
+      cell.vx += Math.sin(cell.y * 0.021 + clock * 2.1 + cell.seed) * 72 * delta;
       cell.vx *= Math.max(0, 1 - drag * delta);
-      // Keep the base of the plume tight; let it splay as it climbs.
-      cell.vx += (base().x - cell.x) * 0.7 * delta * (1 - clamp01(t));
+      // A fire is broad where it feeds and converges as it climbs, so the pull
+      // toward the axis grows with age instead of fading.
+      cell.vx += (base().x - cell.x) * (0.6 + 1.2 * clamp01(t)) * gather * delta;
       cell.x += cell.vx * delta;
       cell.y += cell.vy * delta;
       return t;
     };
 
     const draw = () => {
+      if (width < 4 || height < 4) return;
       ctx.clearRect(0, 0, width, height);
 
       // Smoke first: it belongs behind the flame.
@@ -287,7 +330,7 @@ function BonfireFire({ className = "" }: { className?: string }) {
         );
         const size = cell.size * (0.72 + 0.62 * t);
         const fadeIn = Math.min(1, t * 9);
-        const alpha = 0.6 * fadeIn * Math.pow(1 - t, 0.72);
+        const alpha = 0.64 * fadeIn * Math.pow(1 - t, 0.72);
         if (alpha <= 0.004) continue;
         ctx.globalAlpha = alpha;
         ctx.drawImage(
@@ -323,6 +366,7 @@ function BonfireFire({ className = "" }: { className?: string }) {
     };
 
     const step = (delta: number) => {
+      if (width < 4 || height < 4) return;
       clock += delta;
 
       // Spawn at a steady rate rather than per frame, so the fire does not
@@ -345,15 +389,15 @@ function BonfireFire({ className = "" }: { className?: string }) {
       }
 
       flames = flames.filter((cell) => {
-        advance(cell, delta, 232, 2.1);
+        advance(cell, delta, 232, 2.1, 1);
         return cell.age < cell.ttl;
       });
       embers = embers.filter((cell) => {
-        advance(cell, delta, 95, 0.8);
+        advance(cell, delta, 95, 0.8, 0.15);
         return cell.age < cell.ttl;
       });
       smoke = smoke.filter((cell) => {
-        advance(cell, delta, 14, 0.5);
+        advance(cell, delta, 14, 0.5, 0.1);
         return cell.age < cell.ttl;
       });
     };
@@ -407,6 +451,14 @@ function BonfireFire({ className = "" }: { className?: string }) {
       canvas.width = Math.max(1, Math.floor(width * dpr));
       canvas.height = Math.max(1, Math.floor(height * dpr));
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // Only one of the two bonfires is ever laid out; the hidden one has a
+      // zero-sized canvas and seeding it would divide by zero.
+      if (width < 4 || height < 4) {
+        flames = [];
+        embers = [];
+        smoke = [];
+        return;
+      }
       if (reduced) seedStill();
     };
 
@@ -486,10 +538,10 @@ function BoneShard({ bone }: { bone: Bone }) {
 export default function Bonfire({ className = "" }: { className?: string }) {
   const uid = useId().replace(/[:]/g, "");
   const ash = `bf-ash-${uid}`;
+  const coilMetal = `bf-coilmetal-${uid}`;
   const ashClip = `bf-clip-${uid}`;
   const heapMask = `bf-mask-${uid}`;
   const heapFade = `bf-fade-${uid}`;
-  const heat = `bf-heat-${uid}`;
   const guard = `bf-guard-${uid}`;
   const scorch = `bf-scorch-${uid}`;
   const bloom = `bf-bloom-${uid}`;
@@ -517,17 +569,6 @@ export default function Bonfire({ className = "" }: { className?: string }) {
             <stop offset="1" stopColor="#2a241e" stopOpacity="0" />
           </radialGradient>
           <linearGradient
-            id={heat}
-            x1="150"
-            y1="240"
-            x2="150"
-            y2="446"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop offset="0" stopColor="#ff7a2b" stopOpacity="0" />
-            <stop offset="1" stopColor="#ffb066" stopOpacity="0.5" />
-          </linearGradient>
-          <linearGradient
             id={guard}
             x1="116"
             y1="146"
@@ -542,6 +583,20 @@ export default function Bonfire({ className = "" }: { className?: string }) {
           <filter id={bloom} x="-60%" y="-30%" width="220%" height="170%">
             <feGaussianBlur stdDeviation="5" />
           </filter>
+          <linearGradient
+            id={coilMetal}
+            x1="0"
+            y1="164"
+            x2="0"
+            y2="432"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0" stopColor="#a2998a" />
+            <stop offset="0.32" stopColor="#c2a377" />
+            <stop offset="0.6" stopColor="#d9a05c" />
+            <stop offset="0.82" stopColor="#ff9a3d" />
+            <stop offset="1" stopColor="#ffd08a" />
+          </linearGradient>
           <clipPath id={ashClip}>
             <path d={ASH_SHAPE} />
           </clipPath>
@@ -624,59 +679,24 @@ export default function Bonfire({ className = "" }: { className?: string }) {
         </g>
 
         {/* The coil, where it passes behind the blade. */}
-        {COIL_RUNS.filter((run) => !run.front).map((run, index) => (
-          <path
-            key={`coil-back-${index}`}
-            d={run.d}
-            stroke="#34271a"
-            strokeWidth="6.4"
-            strokeLinecap="round"
-            fill="none"
-          />
+        {/* The blade is the coil: turns that pass behind the axis sit in
+            shadow, turns facing the fire catch it. */}
+        {COIL_RUNS.map((run, index) => (
+          <path key={`coil-dark-${index}`} d={run.d} fill="#6b5636" />
         ))}
-
-        {/* The blade: a spike with a ridge, so it is metal and not a pole. */}
-        <path d={BLADE} fill="#ff7a2b" opacity="0.2" filter={`url(#${bloom})`} />
-        <path d={BLADE} fill="#6a655e" />
-        <path d="M146.8 154v254" stroke="#43403b" strokeOpacity="0.75" strokeWidth="1.7" />
-        <path d="M150 154v258" stroke="#b3aba1" strokeOpacity="0.8" strokeWidth="1.9" />
-        <path d="M152.6 154v250" stroke="#57524c" strokeOpacity="0.6" strokeWidth="1.3" />
-        <path d={BLADE} fill={`url(#${heat})`} />
-
-        {/* The coil in front: metal catching the firelight. */}
         {COIL_RUNS.filter((run) => run.front).map((run, index) => (
-          <g key={`coil-front-${index}`}>
+          <g key={`coil-lit-${index}`}>
+            <path d={run.d} fill={`url(#${coilMetal})`} />
             <path
-              d={run.d}
-              stroke="#2a2016"
-              strokeWidth="8"
-              strokeLinecap="round"
+              d={run.centre}
               fill="none"
-            />
-            <path
-              d={run.d}
-              stroke="#8d6a3a"
-              strokeWidth="6.2"
-              strokeLinecap="round"
-              fill="none"
-            />
-            <path
-              d={run.d}
-              stroke="#c99a55"
-              strokeWidth="3.8"
-              strokeLinecap="round"
-              fill="none"
-            />
-            <path
-              d={run.d}
               stroke="#ffe3b4"
-              strokeOpacity="0.72"
-              strokeWidth="1.3"
-              strokeLinecap="round"
-              fill="none"
+              strokeOpacity="0.38"
+              strokeWidth="1"
             />
           </g>
         ))}
+
 
         {/* Guard, grip, pommel. */}
         <path
