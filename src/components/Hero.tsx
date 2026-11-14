@@ -42,7 +42,7 @@ export default function Hero() {
   return (
     <section
       id="top"
-      className="relative flex min-h-[100svh] flex-col justify-between overflow-hidden px-6 pb-12 pt-24 md:px-12 md:pb-14 md:pt-32"
+      className="relative flex min-h-[100svh] flex-col justify-between overflow-hidden px-6 pb-12 pt-24 md:px-12 md:pb-10 md:pt-28"
     >
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -right-32 top-0 h-[38rem] w-[38rem] rounded-full bg-[radial-gradient(circle,rgba(255,122,43,0.09),transparent_68%)]" />
@@ -51,7 +51,7 @@ export default function Hero() {
       </div>
 
       {/* The shrine's fire, and the only light in the room. */}
-      <div className="pointer-events-none absolute hidden md:block md:-bottom-16 md:right-[-8%] md:h-[34rem] md:w-[34rem] md:opacity-70 lg:bottom-[2%] lg:right-[-2%] lg:h-[42rem] lg:w-[42rem] lg:opacity-95">
+      <div className="pointer-events-none absolute hidden md:block md:-bottom-16 md:right-[-8%] md:h-[34rem] md:w-[34rem] md:opacity-70 lg:bottom-[3%] lg:right-[-7%] lg:h-[42rem] lg:w-[42rem] lg:opacity-95">
         <Bonfire className="h-full w-full" />
       </div>
 
@@ -85,7 +85,7 @@ export default function Hero() {
         ))}
       </motion.div>
 
-      <div className="relative mt-10 md:mt-14">
+      <div className="relative mt-10 md:mt-10">
         <motion.div
           initial={{ opacity: 0, x: -12 }}
           animate={{ opacity: 1, x: 0 }}
@@ -105,7 +105,7 @@ export default function Hero() {
           initial="hidden"
           animate="show"
           variants={headlineContainer}
-          className="display mt-7 text-[11vw] leading-[0.94] text-bone-50 sm:text-[9vw] md:mt-8 lg:text-[6vw]"
+          className="display mt-7 text-[11vw] leading-[0.94] text-bone-50 sm:text-[9vw] md:mt-8 lg:text-[5.7vw]"
         >
           <span className="block overflow-hidden pb-[0.06em]">
             <motion.span variants={lineVariant} className="block">
@@ -137,10 +137,10 @@ export default function Hero() {
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        className="relative mt-10 grid grid-cols-1 gap-8 md:mt-8 md:grid-cols-12 md:items-end"
+        className="relative mt-10 md:mt-6"
       >
-        <div className="md:col-span-7">
-          <p className="max-w-2xl text-lg leading-relaxed text-bone-100 md:text-xl">
+        <div className="max-w-2xl">
+          <p className="text-lg leading-relaxed text-bone-100 md:text-xl">
             I&rsquo;m <span className="text-ember-200">Chan Yu Xuan</span> — a
             final-year IT student, four months into building AI systems that
             actually ship: render orchestration for a livestreaming platform at{" "}
@@ -148,11 +148,10 @@ export default function Hero() {
             squeezed onto an 8 GB card, and the harnesses that keep the loop
             honest.
           </p>
-        </div>
-        <div className="md:col-span-4 md:col-start-9 md:justify-self-end">
+
           <a
             href="#work"
-            className="group inline-flex items-center gap-4 border border-brass-700/40 px-5 py-3 transition-colors duration-500 hover:border-ember-400/70 hover:bg-ember-400/[0.06]"
+            className="group mt-7 inline-flex items-center gap-4 border border-brass-700/40 px-5 py-3 transition-colors duration-500 hover:border-ember-400/70 hover:bg-ember-400/[0.06]"
           >
             <FlameMark className="h-3.5 w-3.5 text-ember-400 transition-transform duration-500 group-hover:scale-110" />
             <span className="engraved text-[10px] text-bone-200 transition-colors group-hover:text-ember-200">

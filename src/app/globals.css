@@ -282,44 +282,6 @@ body {
   animation: deathFade 2.8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Flames. Two blurred bodies, one core, breathing out of phase. */
-.flame {
-  position: absolute;
-  pointer-events: none;
-  filter: blur(6px);
-  mix-blend-mode: screen;
-}
-
-.flame-a {
-  background: radial-gradient(
-    44% 78% at 50% 88%,
-    rgba(255, 196, 120, 0.6) 0%,
-    rgba(255, 122, 43, 0.42) 30%,
-    rgba(190, 62, 8, 0.16) 58%,
-    transparent 78%
-  );
-  animation: flicker 3.4s ease-in-out infinite;
-}
-
-.flame-b {
-  background: radial-gradient(
-    40% 76% at 50% 92%,
-    rgba(255, 232, 190, 0.74) 0%,
-    rgba(255, 150, 66, 0.46) 34%,
-    transparent 72%
-  );
-  animation: flicker 2.3s ease-in-out infinite reverse;
-}
-
-.flame-c {
-  background: radial-gradient(
-    36% 70% at 50% 94%,
-    rgba(255, 252, 244, 0.86) 0%,
-    rgba(255, 198, 132, 0.46) 42%,
-    transparent 76%
-  );
-  animation: flicker 1.6s ease-in-out infinite;
-}
 
 .ember-glow {
   animation: emberPulse 6s ease-in-out infinite;
@@ -360,25 +322,6 @@ body {
   }
 }
 
-@keyframes flicker {
-  0%,
-  100% {
-    opacity: 0.82;
-    transform: scale(1) translateY(0);
-  }
-  22% {
-    opacity: 0.98;
-    transform: scale(1.04) translateY(-2px);
-  }
-  48% {
-    opacity: 0.72;
-    transform: scale(0.985) translateY(1px);
-  }
-  71% {
-    opacity: 0.95;
-    transform: scale(1.025) translateY(-1px);
-  }
-}
 
 @keyframes emberPulse {
   0%,
@@ -476,10 +419,6 @@ body {
     transform: none !important;
   }
 
-  .flame {
-    opacity: 0.9;
-    transform: none !important;
-  }
 
   .death-title {
     animation: none;
