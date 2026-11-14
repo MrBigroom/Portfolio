@@ -23,7 +23,7 @@ import { EMBER_HUES, buildEmberSprite, clamp01 } from "@/lib/ember";
  * the helix of metal wound around it — highlighted where the coil passes in
  * front, dimmed where it passes behind, which is what gives it depth.
  */
-const BLADE_TOP = 168;
+const BLADE_TOP = 150;
 const BLADE_TIP = 432;
 const BLADE_HALF = 4.4;
 const STRAND_TURNS = 7;
