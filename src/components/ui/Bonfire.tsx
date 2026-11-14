@@ -23,99 +23,49 @@ import { EMBER_HUES, buildEmberSprite, clamp01 } from "@/lib/ember";
  * the helix of metal wound around it — highlighted where the coil passes in
  * front, dimmed where it passes behind, which is what gives it depth.
  */
-/** The blade's silhouette: a sword, straight and tapering to its buried point. */
-const BLADE_TOP = 156;
-const BLADE_BOTTOM = 438;
-const BLADE_PATH = "M145.5 156h9l-1.1 254q-3.4 26-6.8 0z";
+const BLADE_TOP = 168;
+const BLADE_TIP = 432;
+const BLADE_HALF = 4.4;
+const STRAND_TURNS = 7;
+const STRAND_STEPS = 160;
 
-const RIDGE_TURNS = 3.2;
-const RIDGE_AMPLITUDE = 3.4;
-const RIDGE_STEPS = 132;
+/** Widest just under the guard, tapering to a point — a leaf, not a rod. */
+function bladeHalfWidth(t: number) {
+  return BLADE_HALF * Math.pow(1 - t, 0.72) * (1 + 0.1 * Math.sin(t * Math.PI));
+}
 
-type RidgeRun = { d: string; front: boolean };
-
-/**
- * A ridge spiralling up the blade. The silhouette stays a sword — this line is
- * what says the steel is coiled, and it disappears over the edges exactly where
- * it would on a real helix.
- */
-const RIDGE_RUNS: RidgeRun[] = (() => {
-  const points = Array.from({ length: RIDGE_STEPS + 1 }, (_, index) => {
-    const t = index / RIDGE_STEPS;
-    const angle = t * Math.PI * 2 * RIDGE_TURNS;
-    return {
-      x: 150 + Math.sin(angle) * RIDGE_AMPLITUDE,
-      y: BLADE_TOP + (BLADE_BOTTOM - BLADE_TOP) * t,
-      front: Math.cos(angle) > 0,
-    };
-  });
-
-  const runs: RidgeRun[] = [];
-  let current: RidgeRun | null = null;
-
-  for (let index = 0; index < points.length; index += 1) {
-    const point = points[index];
-    const next = points[index + 1];
-    if (!current) {
-      current = { d: `M${point.x.toFixed(1)} ${point.y.toFixed(1)}`, front: point.front };
-    } else {
-      current.d += `L${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
-    }
-    if (next && next.front !== point.front) {
-      runs.push(current);
-      current = {
-        d: `M${point.x.toFixed(1)} ${point.y.toFixed(1)}`,
-        front: next.front,
-      };
-    }
+const BLADE_OUTLINE = (() => {
+  const left: string[] = [];
+  const right: string[] = [];
+  const steps = 48;
+  for (let index = 0; index <= steps; index += 1) {
+    const t = index / steps;
+    const y = BLADE_TOP + (BLADE_TIP - BLADE_TOP) * t;
+    const half = bladeHalfWidth(t);
+    left.push(`${index === 0 ? "M" : "L"}${(150 - half).toFixed(2)} ${y.toFixed(1)}`);
+    right.unshift(`L${(150 + half).toFixed(2)} ${y.toFixed(1)}`);
   }
-  if (current) runs.push(current);
-  return runs;
+  return `${left.join("")}${right.join("")}Z`;
 })();
-
-/** Diagonal shading, so the faces read as turning rather than as stripes. */
-const BLADE_BANDS = Array.from({ length: 7 }, (_, index) => {
-  const span = (BLADE_BOTTOM - BLADE_TOP) / 7;
-  const y0 = BLADE_TOP + span * index;
-  const y1 = y0 + span;
-  const slope = 22;
-  return {
-    d: `M104 ${y0.toFixed(1)}L196 ${(y0 + slope).toFixed(1)}L196 ${(y1 + slope).toFixed(1)}L104 ${y1.toFixed(1)}Z`,
-    light: index % 2 === 0,
-  };
-});
 
 /**
- * The blade is rasterised into the flame canvas rather than living in the page
- * SVG. Two stacked layers — an SVG and a transparent canvas over it — composite
- * inconsistently across browsers, and the sword kept painting through the fire.
- * In one canvas the order is unambiguous: blade, then flame.
+ * The blade is a tightly braided bar: three strands twisting inside a solid
+ * silhouette. The strands shade the surface; they never open the outline, so
+ * the blade stays a blade instead of becoming a spring.
  */
-const BLADE_SVG = (() => {
-  const band = (d: string, light: boolean) =>
-    `<path d="${d}" fill="${light ? "rgba(198,188,175,0.16)" : "rgba(0,0,0,0.22)"}"/>`;
-  const ridge = (d: string, front: boolean) =>
-    front
-      ? `<path d="${d}" fill="none" stroke="#d9a866" stroke-opacity="0.85" stroke-width="2.4" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#ffe6c2" stroke-opacity="0.7" stroke-width="1.1" stroke-linecap="round"/>`
-      : `<path d="${d}" fill="none" stroke="#2b2620" stroke-opacity="0.7" stroke-width="2.1" stroke-linecap="round"/>`;
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 460">
-<defs>
-<linearGradient id="h" x1="150" y1="250" x2="150" y2="438" gradientUnits="userSpaceOnUse">
-<stop offset="0" stop-color="#ff7a2b" stop-opacity="0"/>
-<stop offset="1" stop-color="#ffb066" stop-opacity="0.55"/>
-</linearGradient>
-<clipPath id="c"><path d="${BLADE_PATH}"/></clipPath>
-</defs>
-<path d="${BLADE_PATH}" fill="#635d56"/>
-<g clip-path="url(#c)">${BLADE_BANDS.map((b) => band(b.d, b.light)).join("")}</g>
-<path d="${BLADE_PATH}" fill="url(#h)"/>
-${RIDGE_RUNS.map((r) => ridge(r.d, r.front)).join("")}
-<path d="${BLADE_PATH}" fill="none" stroke="#241f1b" stroke-opacity="0.55" stroke-width="0.8"/>
-</svg>`;
-})();
-
-const BLADE_URL = `data:image/svg+xml,${encodeURIComponent(BLADE_SVG)}`;
+const STRANDS = [0, 2, 4].map((third) => {
+  const points: string[] = [];
+  for (let index = 0; index <= STRAND_STEPS; index += 1) {
+    const t = index / STRAND_STEPS;
+    const y = BLADE_TOP + (BLADE_TIP - BLADE_TOP) * t;
+    const half = bladeHalfWidth(t);
+    const x =
+      150 +
+      Math.sin((t * STRAND_TURNS + third / 6) * Math.PI * 2) * half * 0.82;
+    points.push(`${index === 0 ? "M" : "L"}${x.toFixed(2)} ${y.toFixed(1)}`);
+  }
+  return points.join("");
+});
 
 type Bone = {
   d: string;
@@ -207,13 +157,7 @@ type Cell = {
   seed: number;
 };
 
-function BonfireFire({
-  blade,
-  className = "",
-}: {
-  blade: string;
-  className?: string;
-}) {
+function BonfireFire({ className = "" }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const reduced = useReducedMotion();
 
@@ -222,9 +166,6 @@ function BonfireFire({
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    const bladeImage = new Image();
-    bladeImage.src = blade;
 
     const fireSprites = FIRE_BANDS.map((band) =>
       buildSprite([
@@ -242,7 +183,7 @@ function BonfireFire({
     const emberSprites = EMBER_HUES.map((hue) => buildEmberSprite(hue, 48));
 
     const mobile = window.matchMedia("(max-width: 767px)").matches;
-    const FLAME_MAX = mobile ? 95 : 200;
+    const FLAME_MAX = mobile ? 130 : 300;
     const EMBER_MAX = mobile ? 16 : 38;
     const SMOKE_MAX = mobile ? 7 : 14;
 
@@ -251,8 +192,6 @@ function BonfireFire({
     // Particle sizes are authored against a 620px-tall bonfire; shrink them on
     // small canvases so a phone does not get one fat blur.
     let unit = 1;
-    let dpr = 1;
-    let body: HTMLCanvasElement | null = null;
     let flames: Cell[] = [];
     let embers: Cell[] = [];
     let smoke: Cell[] = [];
@@ -268,15 +207,16 @@ function BonfireFire({
 
     const spawnFlame = (): Cell => {
       const spread = Math.max(1, width * 0.12);
-      const offset =
-        (Math.random() < 0.5 ? -1 : 1) * (0.3 + 0.7 * Math.random()) * spread;
+      // Uniform across the axis: an inner-only spawn leaves a hole exactly
+      // where the blade sits.
+      const offset = (Math.random() * 2 - 1) * spread;
       const outer = Math.min(1, Math.abs(offset) / spread);
       return {
         x: base().x + offset,
         y: base().y - Math.random() * height * 0.018,
         vx: (Math.random() - 0.5) * 46,
         vy: -(150 + Math.random() * 130),
-        size: (20 + Math.random() * 46) * unit,
+        size: (24 + Math.random() * 50) * unit,
         age: 0,
         ttl: (0.9 + Math.random() * 0.55) * (1 - 0.18 * outer),
         seed: Math.random() * Math.PI * 2,
@@ -305,82 +245,6 @@ function BonfireFire({
       seed: Math.random() * Math.PI * 2,
     });
 
-    /**
-     * The flame's mass: a blurred teardrop of light drawn beneath the particles.
-     * Additive particles alone are translucent, so a sword standing in the fire
-     * shows straight through it and the flame looks like it parted around it.
-     * This gives the fire a body opaque enough to swallow what it overlaps.
-     */
-    const buildBody = (): HTMLCanvasElement | null => {
-      const surface = document.createElement("canvas");
-      surface.width = Math.max(1, Math.floor(width * dpr));
-      surface.height = Math.max(1, Math.floor(height * dpr));
-      const bx = surface.getContext("2d");
-      if (!bx) return null;
-
-      bx.scale(dpr, dpr);
-
-      const cx = width / 2;
-      const baseY = height * 0.955;
-
-      /** One tongue of the fire, as a soft blurred teardrop. */
-      const lobe = (
-        offsetX: number,
-        halfW: number,
-        rise: number,
-        strength: number,
-      ) => {
-        const topY = baseY - rise;
-        const gradient = bx.createLinearGradient(0, baseY, 0, topY);
-        gradient.addColorStop(0, "rgba(255,214,140,1)");
-        gradient.addColorStop(0.24, "rgba(255,152,58,0.97)");
-        gradient.addColorStop(0.58, "rgba(226,92,18,0.8)");
-        gradient.addColorStop(0.82, "rgba(168,52,8,0.35)");
-        gradient.addColorStop(1, "rgba(126,32,2,0)");
-
-        bx.globalAlpha = strength;
-        bx.beginPath();
-        bx.moveTo(cx + offsetX - halfW, baseY + rise * 0.02);
-        bx.bezierCurveTo(
-          cx + offsetX - halfW * 1.03,
-          baseY - rise * 0.3,
-          cx + offsetX - halfW * 0.7,
-          baseY - rise * 0.62,
-          cx + offsetX - halfW * 0.16,
-          topY + rise * 0.07,
-        );
-        bx.quadraticCurveTo(
-          cx + offsetX,
-          topY - rise * 0.07,
-          cx + offsetX + halfW * 0.16,
-          topY + rise * 0.07,
-        );
-        bx.bezierCurveTo(
-          cx + offsetX + halfW * 0.7,
-          baseY - rise * 0.62,
-          cx + offsetX + halfW * 1.03,
-          baseY - rise * 0.3,
-          cx + offsetX + halfW,
-          baseY + rise * 0.02,
-        );
-        bx.closePath();
-        bx.fillStyle = gradient;
-        bx.fill();
-      };
-
-      // Several tongues of different heights: one smooth teardrop read as a
-      // glowing cone, and the whole point is that it should read as fire.
-      bx.filter = `blur(${Math.max(6, width * 0.017)}px)`;
-      lobe(0, width * 0.145, height * 0.46, 1);
-      lobe(-width * 0.028, width * 0.088, height * 0.63, 0.62);
-      lobe(width * 0.033, width * 0.082, height * 0.57, 0.58);
-      lobe(width * 0.012, width * 0.05, height * 0.71, 0.38);
-      bx.globalAlpha = 1;
-      bx.filter = "none";
-
-      return surface;
-    };
-
     const advance = (
       cell: Cell,
       delta: number,
@@ -405,30 +269,8 @@ function BonfireFire({
       if (width < 4 || height < 4) return;
       ctx.clearRect(0, 0, width, height);
 
+      // Smoke first: it belongs behind the flame.
       ctx.globalCompositeOperation = "source-over";
-
-      // The sword, drawn into the same canvas as the fire so the flame can
-      // genuinely cover it. Scaled exactly as the page SVG would be.
-      if (bladeImage.complete && bladeImage.naturalWidth > 0) {
-        const fit = Math.min(width / 300, height / 460);
-        const drawW = 300 * fit;
-        const drawH = 460 * fit;
-        ctx.drawImage(
-          bladeImage,
-          (width - drawW) / 2,
-          (height - drawH) / 2,
-          drawW,
-          drawH,
-        );
-      }
-
-      if (body) {
-        ctx.globalAlpha = 0.94 + 0.06 * Math.sin(clock * 0.0019);
-        ctx.drawImage(body, 0, 0, width, height);
-        ctx.globalAlpha = 1;
-      }
-
-      // Smoke next: it belongs behind the flame.
       for (const cell of smoke) {
         const t = cell.age / cell.ttl;
         const size = cell.size * (0.7 + 1.1 * t);
@@ -566,7 +408,7 @@ function BonfireFire({
     };
 
     const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = canvas.clientWidth;
       height = canvas.clientHeight;
       unit = Math.max(0.45, Math.min(1, height / 620));
@@ -581,7 +423,6 @@ function BonfireFire({
         smoke = [];
         return;
       }
-      body = buildBody();
       if (reduced) seedStill();
     };
 
@@ -661,6 +502,8 @@ function BoneShard({ bone }: { bone: Bone }) {
 export default function Bonfire({ className = "" }: { className?: string }) {
   const uid = useId().replace(/[:]/g, "");
   const ash = `bf-ash-${uid}`;
+  const bladeClip = `bf-bclip-${uid}`;
+  const heat = `bf-heat-${uid}`;
   const ashClip = `bf-clip-${uid}`;
   const heapMask = `bf-mask-${uid}`;
   const heapFade = `bf-fade-${uid}`;
@@ -705,6 +548,20 @@ export default function Bonfire({ className = "" }: { className?: string }) {
           <filter id={bloom} x="-60%" y="-30%" width="220%" height="170%">
             <feGaussianBlur stdDeviation="5" />
           </filter>
+          <linearGradient
+            id={heat}
+            x1="150"
+            y1="250"
+            x2="150"
+            y2="432"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0" stopColor="#ff7a2b" stopOpacity="0" />
+            <stop offset="1" stopColor="#ffab5e" stopOpacity="0.55" />
+          </linearGradient>
+          <clipPath id={bladeClip}>
+            <path d={BLADE_OUTLINE} />
+          </clipPath>
           <clipPath id={ashClip}>
             <path d={ASH_SHAPE} />
           </clipPath>
@@ -786,7 +643,39 @@ export default function Bonfire({ className = "" }: { className?: string }) {
         ))}
         </g>
 
-        {/* The coil, where it passes behind the blade. */}
+        {/* The blade: a braided bar, hot where it enters the fire. */}
+        <path d={BLADE_OUTLINE} fill="#4f4840" />
+        <g clipPath={`url(#${bladeClip})`}>
+          {STRANDS.map((strand, index) => (
+            <g key={`strand-${index}`}>
+              <path
+                d={strand}
+                fill="none"
+                stroke="#271f19"
+                strokeWidth="2.7"
+                strokeLinecap="round"
+                transform="translate(0.8 0.6)"
+              />
+              <path
+                d={strand}
+                fill="none"
+                stroke="#93866f"
+                strokeWidth="1.85"
+                strokeLinecap="round"
+              />
+            </g>
+          ))}
+        </g>
+        <path d={BLADE_OUTLINE} fill={`url(#${heat})`} />
+        <path
+          d={BLADE_OUTLINE}
+          fill="none"
+          stroke="#241f1a"
+          strokeOpacity="0.55"
+          strokeWidth="0.8"
+        />
+
+
         {/* Guard, grip, pommel. */}
         <path
           d="M128 149q11-3.4 22-3.4t22 3.4l-1.8 5.4q-10.2-2.8-20.2-2.8t-20.2 2.8z"
@@ -827,10 +716,8 @@ export default function Bonfire({ className = "" }: { className?: string }) {
         </g>
       </svg>
 
-      {/* The fire sits above the blade: the SVG would otherwise paint over
-          the canvas regardless of DOM order, and the flame would look like it
-          had parted around the sword. */}
-      <BonfireFire blade={BLADE_URL} className="absolute inset-0 z-[2]" />
+      {/* The fire, in front of everything it is burning. */}
+      <BonfireFire className="absolute inset-0" />
     </div>
   );
 }
