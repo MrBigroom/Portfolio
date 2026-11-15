@@ -379,7 +379,10 @@ function DarksignFire({ className = "" }: { className?: string }) {
       canvas.width = Math.max(1, Math.floor(width * dpr));
       canvas.height = Math.max(1, Math.floor(height * dpr));
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      scale = Math.min(width, height) / VIEW;
+      // The canvas is larger than the mark so flame has somewhere to go.
+      // Scale off the bleed so the ring keeps the same on-screen radius.
+      const bleed = mobile ? 1.24 : 1.35;
+      scale = Math.min(width, height) / (VIEW * bleed);
       cx = width / 2;
       cy = height / 2;
 
@@ -451,7 +454,10 @@ function DarksignFire({ className = "" }: { className?: string }) {
   }, [reduced]);
 
   return (
-    <div className={`pointer-events-none ${className}`} aria-hidden>
+    <div
+      className={`pointer-events-none absolute -inset-[12%] md:-inset-[17.5%] ${className}`}
+      aria-hidden
+    >
       <canvas ref={canvasRef} className="h-full w-full" />
     </div>
   );
@@ -473,7 +479,7 @@ export default function Darksign({ className = "" }: { className?: string }) {
         }}
       />
 
-      <DarksignFire className="absolute inset-0" />
+      <DarksignFire />
     </div>
   );
 }
