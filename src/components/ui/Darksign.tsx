@@ -17,32 +17,6 @@ import { FIRE_HUES, buildEmberSprite, clamp01 } from "@/lib/ember";
 
 const VIEW = 400;
 const RING = 140; // centreline radius, viewBox units
-const BRAND_R = RING + 30; // the scar, just outside the fire's reach
-
-/* ------------------------------------------------------------------ */
-/* The carved brand (deterministic)                                    */
-/* ------------------------------------------------------------------ */
-
-function arcPath(radius: number, from: number, to: number) {
-  const point = (deg: number) => {
-    const rad = (deg * Math.PI) / 180;
-    return {
-      x: VIEW / 2 + radius * Math.cos(rad),
-      y: VIEW / 2 + radius * Math.sin(rad),
-    };
-  };
-  const a = point(from);
-  const b = point(to);
-  const large = to - from > 180 ? 1 : 0;
-  return `M${a.x.toFixed(1)} ${a.y.toFixed(1)}A${radius} ${radius} 0 ${large} 1 ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
-}
-
-const BRAND_ARCS = [
-  [-14, 74],
-  [82, 168],
-  [176, 252],
-  [260, 344],
-].map(([from, to]) => arcPath(BRAND_R, from, to));
 
 type Cell = {
   x: number;
@@ -78,7 +52,7 @@ function DarksignFire({ className = "" }: { className?: string }) {
     );
 
     const mobile = window.matchMedia("(max-width: 767px)").matches;
-    const FLAME_MAX = mobile ? 170 : 380;
+    const FLAME_MAX = mobile ? 200 : 470;
     const SPARK_MAX = mobile ? 30 : 70;
     const SMOKE_MAX = mobile ? 7 : 14;
 
@@ -117,28 +91,21 @@ function DarksignFire({ className = "" }: { className?: string }) {
       };
     };
 
-    // Tongues come from a handful of hot spots that drift; spawning evenly
-    // around the ring can only ever produce a halo.
-    // Biased to the upper half — fire climbs, it does not sit level.
-    const anchors = [-2.5, -1.95, -1.35, -0.6, 0.75, 2.35];
-    const anchorAt = (index: number) =>
-      anchors[index] + Math.sin(clock * 0.28 + index * 1.9) * 0.42;
-
     const spawnFlame = (): Cell => {
-      const theta =
-        anchorAt(Math.floor(Math.random() * anchors.length)) +
-        (Math.random() - 0.5) * 0.42;
+      // Uniform around the rim — every degree of the ring has to be burning.
+      // The tongue shape comes from the stretched sprite, not from clustering.
+      const theta = Math.random() * Math.PI * 2;
       const at = ringPoint(theta);
       // Tallest at the top of the ring, shortest at the foot: fire climbs, and
       // flames off the bottom would only fill the hole.
       const height = (1 - Math.sin(theta)) / 2;
-      const reach = 0.45 + 0.8 * height;
+      const reach = 0.78 + 0.45 * height;
       return {
         x: at.x,
         y: at.y,
         vx: Math.cos(theta) * (26 + Math.random() * 44) * scale,
         vy: -(50 + Math.random() * 95) * scale * (0.55 + 0.6 * height),
-        size: (16 + Math.random() * 30) * scale * (0.75 + 0.45 * height),
+        size: (16 + Math.random() * 30) * scale * (0.88 + 0.3 * height),
         age: 0,
         ttl: (0.7 + Math.random() * 0.6) * reach,
         seed: Math.random() * Math.PI * 2,
@@ -345,7 +312,7 @@ function DarksignFire({ className = "" }: { className?: string }) {
     const seedStill = () => {
       // A lit mark that does not move: flames already part-way up, so the
       // shape reads the same as it does in motion.
-      const count = mobile ? 90 : 190;
+      const count = mobile ? 130 : 280;
       flames = Array.from({ length: count }, (_, index) => {
         const cell = spawnFlame();
         const theta = (index / count) * Math.PI * 2 + Math.random() * 0.1;
@@ -454,24 +421,6 @@ export default function Darksign({ className = "" }: { className?: string }) {
             "radial-gradient(circle, rgba(20, 6, 0, 0.97) 0%, rgba(22, 7, 0, 0.9) 52%, rgba(120, 34, 6, 0.12) 64%, transparent 74%)",
         }}
       />
-
-      {/* The scar, faint, sitting outside the flame. */}
-      <svg
-        viewBox="0 0 400 400"
-        fill="none"
-        className="absolute inset-0 h-full w-full"
-      >
-        <g
-          stroke="#998c7d"
-          strokeOpacity="0.09"
-          strokeWidth="2"
-          strokeLinecap="round"
-        >
-          {BRAND_ARCS.map((d, index) => (
-            <path key={`arc-${index}`} d={d} />
-          ))}
-        </g>
-      </svg>
 
       <DarksignFire className="absolute inset-0" />
     </div>
