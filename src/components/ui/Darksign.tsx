@@ -52,7 +52,7 @@ function DarksignFire({ className = "" }: { className?: string }) {
     );
 
     const mobile = window.matchMedia("(max-width: 767px)").matches;
-    const FLAME_MAX = mobile ? 300 : 760;
+    const FLAME_MAX = mobile ? 340 : 900;
     const SPARK_MAX = mobile ? 30 : 70;
     const SMOKE_MAX = mobile ? 7 : 14;
 
@@ -230,7 +230,7 @@ function DarksignFire({ className = "" }: { className?: string }) {
       const path = ringPath();
 
       if (glowLayer) {
-        ctx.globalAlpha = 0.92 * breath;
+        ctx.globalAlpha = 1 * breath;
         ctx.drawImage(glowLayer, 0, 0, width, height);
         ctx.globalAlpha = 1;
       }
@@ -248,14 +248,14 @@ function DarksignFire({ className = "" }: { className?: string }) {
       // Flame licking off it.
       for (const cell of flames) {
         const t = cell.age / cell.ttl;
-        const heat = Math.pow(t, 0.7);
+        const heat = Math.pow(t, 0.65);
         const band = Math.min(
           sprites.length - 1,
           Math.floor(heat * sprites.length),
         );
         const size = cell.size * (0.65 + 0.85 * t);
         const alpha =
-          0.4 *
+          0.43 *
           Math.min(1, t * 9) *
           Math.pow(1 - t, 0.8) *
           edgeFade(cell.x, cell.y);
