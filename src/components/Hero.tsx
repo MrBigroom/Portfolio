@@ -1,8 +1,8 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import Bonfire from "@/components/ui/Bonfire";
-import { Corner, FlameMark } from "@/components/ui/Ornament";
+import Darksign from "@/components/ui/Darksign";
+import { Corner, SignMark } from "@/components/ui/Ornament";
 
 const container: Variants = {
   hidden: {},
@@ -45,14 +45,14 @@ export default function Hero() {
       className="relative flex min-h-[100svh] flex-col justify-between overflow-hidden px-6 pb-12 pt-24 md:px-12 md:pb-10 md:pt-28"
     >
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -right-32 top-0 h-[38rem] w-[38rem] rounded-full bg-[radial-gradient(circle,rgba(255,122,43,0.09),transparent_68%)]" />
-        <div className="absolute -left-40 bottom-0 h-[34rem] w-[34rem] rounded-full bg-[radial-gradient(circle,rgba(147,140,130,0.07),transparent_70%)]" />
-        <div className="absolute inset-x-6 top-24 h-px bg-gradient-to-r from-transparent via-brass-700/30 to-transparent md:inset-x-12" />
+        <div className="absolute -right-32 top-0 h-[38rem] w-[38rem] rounded-full bg-[radial-gradient(circle,rgba(177,196,205,0.09),transparent_68%)]" />
+        <div className="absolute -left-40 bottom-0 h-[34rem] w-[34rem] rounded-full bg-[radial-gradient(circle,rgba(134,146,156,0.07),transparent_70%)]" />
+        <div className="absolute inset-x-6 top-24 h-px bg-gradient-to-r from-transparent via-steel-700/30 to-transparent md:inset-x-12" />
       </div>
 
-      {/* The shrine's fire, and the only light in the room. */}
-      <div className="pointer-events-none absolute hidden md:block md:-bottom-16 md:right-[-8%] md:h-[34rem] md:w-[34rem] md:opacity-70 lg:bottom-[3%] lg:right-[-7%] lg:h-[42rem] lg:w-[42rem] lg:opacity-95">
-        <Bonfire className="h-full w-full" />
+      {/* The mark, and the only fire left on the page. */}
+      <div className="pointer-events-none absolute right-[-6%] top-1/2 hidden h-[30rem] w-[30rem] -translate-y-1/2 opacity-95 md:block lg:right-[0%] lg:h-[32rem] lg:w-[32rem]">
+        <Darksign className="h-full w-full" />
       </div>
 
       <Corner className="pointer-events-none absolute left-5 top-28 hidden h-11 w-11 opacity-35 md:left-8 md:block" />
@@ -64,7 +64,7 @@ export default function Hero() {
         initial="hidden"
         animate="show"
         variants={container}
-        className="relative grid grid-cols-2 gap-x-6 gap-y-6 border-b border-brass-700/20 pb-6 md:grid-cols-4"
+        className="relative grid grid-cols-2 gap-x-6 gap-y-6 border-b border-steel-700/20 pb-6 md:grid-cols-4"
       >
         {meta.map((entry) => (
           <motion.div key={entry.label} variants={item}>
@@ -73,8 +73,8 @@ export default function Hero() {
             </div>
             <div className="mt-2 text-sm text-bone-100 md:text-[0.95rem]">
               {entry.live ? (
-                <span className="inline-flex items-start gap-2 text-ember-200">
-                  <span className="mt-[0.45em] h-1.5 w-1.5 animate-pulse rounded-full bg-ember-400" />
+                <span className="inline-flex items-start gap-2 text-rime-200">
+                  <span className="mt-[0.45em] h-1.5 w-1.5 animate-pulse rounded-full bg-rime-400" />
                   {entry.value}
                 </span>
               ) : (
@@ -92,12 +92,12 @@ export default function Hero() {
           transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
           className="flex items-center gap-4"
         >
-          <span className="display text-[10px] tracking-[0.3em] text-ember-300">
+          <span className="display text-[10px] tracking-[0.3em] text-rime-300">
             I
           </span>
-          <span aria-hidden className="h-px w-12 bg-brass-700/60" />
+          <span aria-hidden className="h-px w-12 bg-steel-700/60" />
           <span className="engraved text-[10px] text-bone-200">
-            Heir of Fire
+            Bear the Mark
           </span>
         </motion.div>
 
@@ -115,7 +115,7 @@ export default function Hero() {
           <span className="block overflow-hidden pb-[0.06em]">
             <motion.span
               variants={lineVariant}
-              className="display-italic ember-text block"
+              className="display-italic rime-text block"
             >
               intelligence
             </motion.span>
@@ -141,34 +141,34 @@ export default function Hero() {
       >
         <div className="max-w-2xl">
           <p className="text-lg leading-relaxed text-bone-100 md:text-xl">
-            I&rsquo;m <span className="text-ember-200">Chan Yu Xuan</span> — a
+            I&rsquo;m <span className="text-rime-200">Chan Yu Xuan</span> — a
             final-year IT student, four months into building AI systems that
             actually ship: render orchestration for a livestreaming platform at{" "}
-            <span className="text-brass-300">SNS Network</span>, local inference
+            <span className="text-steel-300">SNS Network</span>, local inference
             squeezed onto an 8 GB card, and the harnesses that keep the loop
             honest.
           </p>
 
           <a
             href="#work"
-            className="group mt-7 inline-flex items-center gap-4 border border-brass-700/40 px-5 py-3 transition-colors duration-500 hover:border-ember-400/70 hover:bg-ember-400/[0.06]"
+            className="group mt-7 inline-flex items-center gap-4 border border-steel-700/40 px-5 py-3 transition-colors duration-500 hover:border-rime-400/70 hover:bg-rime-400/[0.06]"
           >
-            <FlameMark className="h-3.5 w-3.5 text-ember-400 transition-transform duration-500 group-hover:scale-110" />
-            <span className="engraved text-[10px] text-bone-200 transition-colors group-hover:text-ember-200">
+            <SignMark className="h-3.5 w-3.5 text-rime-400 transition-transform duration-500 group-hover:scale-110" />
+            <span className="engraved text-[10px] text-bone-200 transition-colors group-hover:text-rime-200">
               Kindle the flame
             </span>
-            <span className="text-ember-300 transition-transform duration-500 group-hover:translate-y-0.5">
+            <span className="text-rime-300 transition-transform duration-500 group-hover:translate-y-0.5">
               ↓
             </span>
           </a>
         </div>
       </motion.div>
 
-      {/* On a phone the fire gets its own ground rather than sitting under
+      {/* On a phone the mark gets its own ground rather than sitting under
           the copy. */}
       <div className="relative mt-10 flex justify-center md:hidden">
-        <div className="h-[17rem] w-[17rem]">
-          <Bonfire className="h-full w-full" />
+        <div className="h-[15rem] w-[15rem]">
+          <Darksign className="h-full w-full" />
         </div>
       </div>
     </section>

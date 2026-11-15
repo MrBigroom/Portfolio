@@ -3,19 +3,17 @@
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 import {
-  EMBER_HUES,
+  ASH_HUES,
   buildEmberSprite,
   clamp01,
 } from "@/lib/ember";
 
 /**
- * The fire the page is lit by.
+ * Ash falling through a room with no fire in it.
  *
- * Embers are drawn as pre-rendered radiance sprites rather than arc/gradient
- * calls: a single drawImage per particle keeps the whole field under a
- * millisecond even on integrated graphics. Four sprite tints stand in for an
- * ember cooling as it climbs — white-hot at the base of the world, deep red
- * as it reaches the ceiling.
+ * The same sprite trick as the mark's flame — one drawImage per mote — but the
+ * tints run cold, the drift is slower, and nothing here is allowed to glow.
+ * The only warmth on the page belongs to the Darksign.
  */
 
 type Layer = {
@@ -28,9 +26,9 @@ type Layer = {
 
 /** Far → near. Depth is sold by size, speed and opacity together. */
 const LAYERS: Layer[] = [
-  { weight: 0.5, size: [5, 9], speed: [0.08, 0.22], alpha: [0.16, 0.34], sway: [0.04, 0.14] },
-  { weight: 0.32, size: [9, 15], speed: [0.24, 0.52], alpha: [0.24, 0.5], sway: [0.08, 0.26] },
-  { weight: 0.18, size: [15, 26], speed: [0.52, 1.15], alpha: [0.34, 0.7], sway: [0.14, 0.4] },
+  { weight: 0.5, size: [4, 8], speed: [0.04, 0.12], alpha: [0.12, 0.26], sway: [0.03, 0.1] },
+  { weight: 0.32, size: [8, 14], speed: [0.13, 0.3], alpha: [0.18, 0.4], sway: [0.06, 0.2] },
+  { weight: 0.18, size: [14, 24], speed: [0.3, 0.66], alpha: [0.26, 0.55], sway: [0.1, 0.3] },
 ];
 
 type Particle = {
@@ -45,7 +43,7 @@ type Particle = {
   layer: number;
 };
 
-export default function EmberField({ className = "" }: { className?: string }) {
+export default function AshField({ className = "" }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const reduced = useReducedMotion();
 
@@ -55,7 +53,7 @@ export default function EmberField({ className = "" }: { className?: string }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const sprites = EMBER_HUES.map((hue) => buildEmberSprite(hue));
+    const sprites = ASH_HUES.map((hue) => buildEmberSprite(hue));
     const mobile = window.matchMedia("(max-width: 767px)").matches;
     const total = mobile ? 58 : 150;
 
@@ -199,7 +197,7 @@ export default function EmberField({ className = "" }: { className?: string }) {
     <canvas
       ref={canvasRef}
       aria-hidden
-      className={`pointer-events-none fixed inset-0 z-[1] opacity-80 ${className}`}
+      className={`pointer-events-none fixed inset-0 z-[1] opacity-55 ${className}`}
     />
   );
 }

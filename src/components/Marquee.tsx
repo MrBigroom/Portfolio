@@ -21,7 +21,7 @@ export default function Marquee() {
   const items = [...marqueeItems, ...marqueeItems];
 
   return (
-    <div className="marquee relative overflow-hidden border-y border-brass-700/25 bg-void-900/40 py-5 md:py-6">
+    <div className="marquee relative overflow-hidden border-y border-steel-700/25 bg-void-900/40 py-5 md:py-6">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-y-0 left-0 z-10 w-20 bg-gradient-to-r from-void-950 to-transparent md:w-40"
@@ -35,7 +35,7 @@ export default function Marquee() {
           <span
             key={`${item}-${index}`}
             className={`display px-5 text-xl md:text-2xl ${
-              item === "✦" ? "text-ember-500" : "text-bone-200/85"
+              item === "✦" ? "text-rime-500" : "text-bone-200/85"
             } ${index % 4 === 0 ? "display-italic" : ""}`}
           >
             {item}

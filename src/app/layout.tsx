@@ -1,6 +1,6 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
-import EmberField from "@/components/ui/EmberField";
+import AshField from "@/components/ui/AshField";
 import MotionProvider from "@/components/ui/MotionProvider";
 
 export const metadata: Metadata = {
@@ -40,7 +40,7 @@ export default function RootLayout({
           <div className="fog-b" />
           <div className="fog-c" />
         </div>
-        <EmberField />
+        <AshField />
         <div aria-hidden className="soot" />
         <div aria-hidden className="ash-veil" />
         <MotionProvider>{children}</MotionProvider>

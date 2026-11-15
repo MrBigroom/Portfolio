@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
-import { FlameMark } from "@/components/ui/Ornament";
+import { SignMark } from "@/components/ui/Ornament";
 
 const links = [
   { id: "work", href: "#work", label: "Work", numeral: "III" },
@@ -71,7 +71,7 @@ export default function Nav() {
         transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed inset-x-0 top-0 z-50 transition-colors duration-500 ${
           scrolled || open
-            ? "border-b border-brass-700/25 bg-void-950"
+            ? "border-b border-steel-700/25 bg-void-950"
             : "border-b border-transparent"
         }`}
       >
@@ -85,7 +85,7 @@ export default function Nav() {
         <motion.div
           aria-hidden
           style={{ scaleX: progress }}
-          className="absolute inset-x-0 top-0 z-10 h-px origin-left bg-gradient-to-r from-ember-600/0 via-ember-300/70 to-ember-600/0"
+          className="absolute inset-x-0 top-0 z-10 h-px origin-left bg-gradient-to-r from-rime-600/0 via-rime-300/70 to-rime-600/0"
         />
 
         <nav
@@ -93,11 +93,11 @@ export default function Nav() {
           className="relative z-10 mx-auto flex max-w-[110rem] items-center justify-between gap-6 px-6 py-5 md:px-12"
         >
           <a href="#top" className="group flex items-center gap-3">
-            <span className="relative grid h-10 w-10 place-items-center border border-brass-700/50 transition-colors group-hover:border-ember-400/70">
-              <FlameMark className="h-4 w-4 text-ember-400" />
+            <span className="relative grid h-10 w-10 place-items-center border border-steel-700/50 transition-colors group-hover:border-rime-400/70">
+              <SignMark className="h-4 w-4 text-rime-400" />
               <span
                 aria-hidden
-                className="absolute inset-[3px] border border-brass-500/15"
+                className="absolute inset-[3px] border border-steel-500/15"
               />
             </span>
             <span className="leading-tight">
@@ -122,17 +122,17 @@ export default function Nav() {
                   aria-current={isActive ? "true" : undefined}
                   className={`engraved group relative text-[10px] transition-colors duration-300 ${
                     isActive
-                      ? "text-ember-200"
-                      : "text-bone-200 hover:text-ember-200"
+                      ? "text-rime-200"
+                      : "text-bone-200 hover:text-rime-200"
                   }`}
                 >
-                  <span aria-hidden className="mr-1.5 text-brass-500/70">
+                  <span aria-hidden className="mr-1.5 text-steel-500/70">
                     ✦
                   </span>
                   {link.label}
                   <span
                     aria-hidden
-                    className={`absolute -bottom-2 left-0 h-px bg-gradient-to-r from-ember-400/80 to-transparent transition-all duration-500 ${
+                    className={`absolute -bottom-2 left-0 h-px bg-gradient-to-r from-rime-400/80 to-transparent transition-all duration-500 ${
                       isActive ? "w-full" : "w-0 group-hover:w-full"
                     }`}
                   />
@@ -141,7 +141,7 @@ export default function Nav() {
             })}
             <a
               href="#contact"
-              className="engraved border border-brass-700/40 px-3.5 py-2 text-[9px] text-ember-200 transition-colors duration-300 hover:border-ember-400/70 hover:bg-ember-400/[0.06]"
+              className="engraved border border-steel-700/40 px-3.5 py-2 text-[9px] text-rime-200 transition-colors duration-300 hover:border-rime-400/70 hover:bg-rime-400/[0.06]"
             >
               Summon
             </a>
@@ -153,7 +153,7 @@ export default function Nav() {
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? "Close menu" : "Open menu"}
-            className="relative flex h-10 w-10 flex-col items-center justify-center gap-1.5 border border-brass-700/40 md:hidden"
+            className="relative flex h-10 w-10 flex-col items-center justify-center gap-1.5 border border-steel-700/40 md:hidden"
           >
             <span
               className={`h-px w-5 bg-bone-100 transition-transform duration-300 ${
@@ -187,7 +187,7 @@ export default function Nav() {
           >
             <div
               aria-hidden
-              className="pointer-events-none absolute bottom-0 left-1/2 h-[26rem] w-[26rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,122,43,0.12),transparent_70%)] blur-2xl"
+              className="pointer-events-none absolute bottom-0 left-1/2 h-[26rem] w-[26rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(177,196,205,0.12),transparent_70%)] blur-2xl"
             />
             <div className="relative flex h-full flex-col justify-between px-8 pb-10 pt-28">
               <motion.ul
@@ -216,12 +216,12 @@ export default function Nav() {
                     <a
                       href={link.href}
                       onClick={() => setOpen(false)}
-                      className="group flex items-baseline justify-between border-b border-brass-700/20 py-5"
+                      className="group flex items-baseline justify-between border-b border-steel-700/20 py-5"
                     >
-                      <span className="display text-3xl text-bone-100 transition-colors group-hover:text-ember-200">
+                      <span className="display text-3xl text-bone-100 transition-colors group-hover:text-rime-200">
                         {link.label}
                       </span>
-                      <span className="display text-[10px] tracking-[0.25em] text-brass-500">
+                      <span className="display text-[10px] tracking-[0.25em] text-steel-500">
                         {link.numeral}
                       </span>
                     </a>
@@ -235,7 +235,7 @@ export default function Nav() {
                 </span>
                 <a
                   href="mailto:chanyuxuan21@gmail.com"
-                  className="engraved text-[9px] text-ember-300"
+                  className="engraved text-[9px] text-rime-300"
                 >
                   Email
                 </a>

@@ -50,44 +50,76 @@ export function Corner({ className = "" }: OrnamentProps) {
   );
 }
 
-/** A flame inside a ring — the footer's mark. */
+/** The mark, large: a broken ring around a hole. No flame — the hole is the point. */
 export function Seal({ className = "" }: OrnamentProps) {
   return (
     <svg aria-hidden viewBox="0 0 72 72" fill="none" className={className}>
-      <circle cx="36" cy="36" r="27" stroke="#b08a52" strokeOpacity="0.5" />
       <circle
         cx="36"
         cy="36"
-        r="22"
-        stroke="#7a5c30"
-        strokeOpacity="0.4"
-        strokeDasharray="1 5"
+        r="27"
+        pathLength={100}
+        strokeDasharray="41 5 13 5"
+        stroke="#8e9aa1"
+        strokeOpacity="0.55"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        transform="rotate(-34 36 36)"
       />
-      <path
-        d="M36 20c5 7 8 10 8 15a8 8 0 0 1-16 0c0-2 1-4 3-6 0 2 1 3 2 3 0-4 1-7 3-12z"
-        stroke="#ffa14f"
-        strokeOpacity="0.85"
-        strokeWidth="1.4"
-        strokeLinejoin="round"
+      <circle
+        cx="36"
+        cy="36"
+        r="20"
+        pathLength={100}
+        strokeDasharray="2 6"
+        stroke="#5b666c"
+        strokeOpacity="0.5"
+        strokeWidth="1"
       />
-      <circle cx="36" cy="55" r="1.6" fill="#ff7a2b" fillOpacity="0.7" />
+      <circle
+        cx="36"
+        cy="36"
+        r="2.6"
+        fill="#05060a"
+        stroke="#66717b"
+        strokeOpacity="0.7"
+      />
+      {[-42, 106, 214].map((deg) => (
+        <path
+          key={deg}
+          d="M36 7v4"
+          stroke="#66717b"
+          strokeOpacity="0.45"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+          transform={`rotate(${deg} 36 36)`}
+        />
+      ))}
     </svg>
   );
 }
 
-/** The small flame glyph used as a bullet and as a section mark. */
-export function FlameMark({ className = "" }: OrnamentProps) {
+/** The mark, small: the same broken ring, legible at twelve pixels. */
+export function SignMark({ className = "" }: OrnamentProps) {
   return (
     <svg aria-hidden viewBox="0 0 24 24" fill="none" className={className}>
-      <path
-        d="M12 3c3.2 4.4 5 6.8 5 9.8a5 5 0 0 1-10 0c0-1.4.6-2.6 1.8-3.8 0 1.4.6 2.3 1.4 2.5C10.4 8.9 11 6.4 12 3z"
-        fill="currentColor"
-        fillOpacity="0.9"
+      <circle
+        cx="12"
+        cy="12"
+        r="8"
+        pathLength={100}
+        strokeDasharray="34 6 12 6"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        transform="rotate(-38 12 12)"
       />
       <path
-        d="M12 8.6c1.5 2 2.2 3.2 2.2 4.5a2.2 2.2 0 0 1-4.4 0c0-1 .5-1.9 1.2-2.7 0 .8.3 1.3.7 1.4.1-1.1.2-2 .3-3.2z"
-        fill="#ffe4b8"
-        fillOpacity="0.55"
+        d="M12 2.6v2.2"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        opacity="0.7"
       />
     </svg>
   );

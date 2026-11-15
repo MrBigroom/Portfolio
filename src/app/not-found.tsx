@@ -23,9 +23,9 @@ export default function NotFound() {
         </p>
         <a
           href="/"
-          className="engraved mt-12 inline-block border border-brass-700/50 px-6 py-3 text-[10px] text-ember-200 transition-colors duration-500 hover:border-ember-400/80 hover:bg-ember-400/[0.06]"
+          className="engraved mt-12 inline-block border border-steel-700/50 px-6 py-3 text-[10px] text-rime-200 transition-colors duration-500 hover:border-rime-400/80 hover:bg-rime-400/[0.06]"
         >
-          Return to the bonfire
+          Return to the mark
         </a>
       </div>
     </main>

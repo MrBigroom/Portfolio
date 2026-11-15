@@ -1,19 +1,28 @@
 /**
- * Shared ember rendering primitives.
+ * Sprite toolkit shared by the two things that drift in this page: the fire
+ * on the Darksign, and the ash that falls off it.
  *
- * Embers are drawn from pre-rendered radiance sprites rather than per-frame
- * gradients: one drawImage per particle keeps the field cheap, and four tints
- * carry an ember from white-hot to cooling slag as it climbs.
+ * Particles are drawn from pre-rendered radiance sprites rather than
+ * per-frame gradients — one drawImage each keeps both fields cheap — and the
+ * four tints carry a mote from hot to cold as it ages.
  */
 
 export type EmberHue = { core: string; mid: string; edge: string };
 
-/** Hot → cold. The first entry is the fire itself; the last is only ash's memory of it. */
-export const EMBER_HUES: EmberHue[] = [
+/** Hot. The Darksign, and nothing else. */
+export const FIRE_HUES: EmberHue[] = [
   { core: "255, 245, 228", mid: "255, 198, 132", edge: "255, 122, 43" },
   { core: "255, 214, 160", mid: "255, 161, 79", edge: "232, 90, 16" },
   { core: "255, 170, 92", mid: "232, 90, 16", edge: "125, 38, 4" },
   { core: "210, 96, 48", mid: "125, 38, 4", edge: "74, 22, 3" },
+];
+
+/** Cold. Ash without a fire under it. */
+export const ASH_HUES: EmberHue[] = [
+  { core: "226, 232, 236", mid: "168, 178, 187", edge: "96, 104, 112" },
+  { core: "198, 206, 213", mid: "134, 146, 156", edge: "74, 83, 92" },
+  { core: "168, 178, 187", mid: "102, 113, 123", edge: "48, 57, 65" },
+  { core: "120, 130, 140", mid: "60, 72, 82", edge: "30, 36, 42" },
 ];
 
 export function buildEmberSprite(hue: EmberHue, size = 64): HTMLCanvasElement {

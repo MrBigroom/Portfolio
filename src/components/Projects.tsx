@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Reveal from "@/components/ui/Reveal";
 import SectionLabel from "@/components/ui/SectionLabel";
 import CountUp from "@/components/ui/CountUp";
-import { FlameMark } from "@/components/ui/Ornament";
+import { SignMark } from "@/components/ui/Ornament";
 import { projects, type Project } from "@/data/projects";
 
 const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
@@ -24,7 +24,7 @@ function Corners() {
         <span
           key={corner}
           aria-hidden
-          className={`pointer-events-none absolute z-20 h-3 w-3 border-brass-300/50 ${corner}`}
+          className={`pointer-events-none absolute z-20 h-3 w-3 border-steel-300/50 ${corner}`}
         />
       ))}
     </>
@@ -34,10 +34,10 @@ function Corners() {
 function ProjectCard({ project, idx }: { project: Project; idx: number }) {
   const reversed = idx % 2 === 1;
   const accentText =
-    project.accent === "ember" ? "text-ember-300" : "text-blood-400";
+    project.accent === "ember" ? "text-rime-300" : "text-blood-400";
   const accentLine =
     project.accent === "ember"
-      ? "from-ember-500/70 via-ember-400/20"
+      ? "from-rime-500/70 via-rime-400/20"
       : "from-blood-500/70 via-blood-400/20";
   const showStatus = !project.kind
     .toLowerCase()
@@ -53,25 +53,25 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
         />
 
         {/* Item header */}
-        <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 border-b border-brass-700/25 pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 border-b border-steel-700/25 pb-4">
           <div className="flex items-center gap-3">
             <span
               className={`display text-sm tracking-[0.3em] ${accentText}`}
             >
               {ROMAN[idx] ?? project.index}
             </span>
-            <span aria-hidden className="h-px w-6 bg-brass-700/50" />
+            <span aria-hidden className="h-px w-6 bg-steel-700/50" />
             <span className="mono text-[10px] uppercase tracking-[0.2em] text-bone-300">
               {project.year}
             </span>
             {showStatus && (
-              <span className="engraved border border-brass-700/40 px-2 py-1 text-[8px] text-bone-200">
+              <span className="engraved border border-steel-700/40 px-2 py-1 text-[8px] text-bone-200">
                 {project.status}
               </span>
             )}
             {project.featured && (
-              <span className="engraved bg-ember-500 px-2 py-1 text-[8px] text-void-950">
-                Heir of Fire
+              <span className="engraved bg-rime-500 px-2 py-1 text-[8px] text-void-950">
+                Branded
               </span>
             )}
           </div>
@@ -97,7 +97,7 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
             </p>
 
             {project.flavour && (
-              <div className="mt-7 border-t border-brass-700/25 pt-4">
+              <div className="mt-7 border-t border-steel-700/25 pt-4">
                 <div className="mono text-[9px] uppercase tracking-[0.24em] text-bone-300/50">
                   Item description
                 </div>
@@ -114,11 +114,11 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
                   whileInView={{ scaleX: 1 }}
                   viewport={{ once: true, margin: "-60px" }}
                   transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-                  className="h-full w-full origin-left bg-gradient-to-r from-ember-600 via-ember-300 to-ember-600/10"
+                  className="h-full w-full origin-left bg-gradient-to-r from-rime-600 via-rime-300 to-rime-600/10"
                 />
               </div>
-              <div className="engraved mt-2 text-[8px] text-brass-500">
-                Flames tended
+              <div className="engraved mt-2 text-[8px] text-steel-500">
+                Witnessed
               </div>
             </div>
           </div>
@@ -127,10 +127,10 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
             className={`min-w-0 lg:col-span-7 ${reversed ? "lg:order-1" : ""}`}
           >
             {project.image && (
-              <div className="group relative overflow-hidden border border-brass-700/40 bg-void-900">
+              <div className="group relative overflow-hidden border border-steel-700/40 bg-void-900">
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute inset-0 z-10 border border-brass-500/10"
+                  className="pointer-events-none absolute inset-0 z-10 border border-steel-500/10"
                 />
                 <Image
                   src={project.image}
@@ -158,14 +158,14 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
                   key={index}
                   className="flex gap-3 text-sm leading-relaxed text-bone-200"
                 >
-                  <FlameMark className="mt-[0.15em] h-3 w-3 shrink-0 text-ember-500/80" />
+                  <SignMark className="mt-[0.15em] h-3 w-3 shrink-0 text-rime-500/80" />
                   <span>{highlight}</span>
                 </li>
               ))}
             </ul>
 
             {project.metrics.length > 0 && (
-              <div className="mt-8 grid grid-cols-2 gap-4 border-y border-brass-700/25 py-6 sm:grid-cols-4">
+              <div className="mt-8 grid grid-cols-2 gap-4 border-y border-steel-700/25 py-6 sm:grid-cols-4">
                 {project.metrics.map((metric) => (
                   <div key={metric.label}>
                     <div className="display text-2xl text-bone-50 md:text-3xl">
@@ -183,7 +183,7 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
               {project.tech.map((tech) => (
                 <span
                   key={tech}
-                  className="mono border border-brass-700/35 px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-bone-200 transition-colors duration-300 hover:border-ember-400/60 hover:text-ember-200"
+                  className="mono border border-steel-700/35 px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-bone-200 transition-colors duration-300 hover:border-rime-400/60 hover:text-rime-200"
                 >
                   {tech}
                 </span>
@@ -207,7 +207,7 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
                     <a
                       key={link.url}
                       href={link.url}
-                      className="magnetic text-bone-300 transition-colors hover:text-ember-200"
+                      className="magnetic text-bone-300 transition-colors hover:text-rime-200"
                     >
                       {link.label} ↗
                     </a>
