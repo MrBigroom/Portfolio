@@ -167,6 +167,15 @@ function DarksignFire({ className = "" }: { className?: string }) {
       };
     };
 
+    // Flame that reaches the edge of its own canvas must fade, not be cut —
+    // the box is invisible, so a hard boundary looks like the page cropping
+    // the fire.
+    const edgeFade = (x: number, y: number) => {
+      const margin = 80 * scale;
+      const nearest = Math.min(x, width - x, y, height - y);
+      return nearest <= 0 ? 0 : Math.min(1, nearest / margin);
+    };
+
     const advance = (cell: Cell, delta: number, buoyancy: number) => {
       cell.age += delta;
       cell.vy -= buoyancy * scale * delta;
@@ -221,7 +230,7 @@ function DarksignFire({ className = "" }: { className?: string }) {
       const path = ringPath();
 
       if (glowLayer) {
-        ctx.globalAlpha = 0.72 * breath;
+        ctx.globalAlpha = 0.92 * breath;
         ctx.drawImage(glowLayer, 0, 0, width, height);
         ctx.globalAlpha = 1;
       }
@@ -232,7 +241,7 @@ function DarksignFire({ className = "" }: { className?: string }) {
 
       // Dim on purpose. A bright core turns the mark into a drawn circle and
       // fights the flame that is supposed to be coming off it.
-      ctx.strokeStyle = `rgba(255, 186, 116, ${0.26 * breath})`;
+      ctx.strokeStyle = `rgba(255, 190, 122, ${0.4 * breath})`;
       ctx.lineWidth = 1.1 * scale;
       ctx.stroke(path);
 
@@ -245,7 +254,11 @@ function DarksignFire({ className = "" }: { className?: string }) {
           Math.floor(heat * sprites.length),
         );
         const size = cell.size * (0.65 + 0.85 * t);
-        const alpha = 0.4 * Math.min(1, t * 9) * Math.pow(1 - t, 0.8);
+        const alpha =
+          0.4 *
+          Math.min(1, t * 9) *
+          Math.pow(1 - t, 0.8) *
+          edgeFade(cell.x, cell.y);
         if (alpha <= 0.004) continue;
         ctx.globalAlpha = alpha;
         // Tall and narrow: a lick of flame, not a bead of light.
@@ -260,7 +273,8 @@ function DarksignFire({ className = "" }: { className?: string }) {
           sprites.length - 1,
           Math.floor(t * sprites.length),
         );
-        const alpha = Math.sin(Math.PI * clamp01(t)) * 0.9;
+        const alpha =
+          Math.sin(Math.PI * clamp01(t)) * 0.9 * edgeFade(cell.x, cell.y);
         if (alpha <= 0.004) continue;
         const size = cell.size * (1 - 0.35 * t);
         ctx.globalAlpha = alpha;
@@ -399,9 +413,9 @@ function DarksignFire({ className = "" }: { className?: string }) {
         if (!g) return null;
         const dpr = canvas.width / Math.max(1, width);
         g.setTransform(dpr, 0, 0, dpr, 0, 0);
-        g.filter = `blur(${Math.round(9 * scale)}px)`;
+        g.filter = `blur(${Math.round(10 * scale)}px)`;
         g.strokeStyle = "rgba(214, 78, 10, 1)";
-        g.lineWidth = 13 * scale;
+        g.lineWidth = 15 * scale;
         g.stroke(ringPath());
         return layer;
       })();
