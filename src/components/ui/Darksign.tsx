@@ -235,13 +235,13 @@ function DarksignFire({ className = "" }: { className?: string }) {
         ctx.globalAlpha = 1;
       }
 
-      ctx.strokeStyle = `rgba(214, 88, 22, ${0.5 * breath})`;
+      ctx.strokeStyle = `rgba(214, 88, 22, ${0.42 * breath})`;
       ctx.lineWidth = 2.6 * scale;
       ctx.stroke(path);
 
       // Dim on purpose. A bright core turns the mark into a drawn circle and
       // fights the flame that is supposed to be coming off it.
-      ctx.strokeStyle = `rgba(255, 190, 122, ${0.4 * breath})`;
+      ctx.strokeStyle = `rgba(255, 190, 122, ${0.28 * breath})`;
       ctx.lineWidth = 1.1 * scale;
       ctx.stroke(path);
 
