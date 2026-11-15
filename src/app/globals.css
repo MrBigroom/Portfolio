@@ -5,15 +5,14 @@
 @tailwind utilities;
 
 :root {
-  --void: #05060a;
-  --void-900: #0a0c11;
-  --ash: #86929c;
-  --bone: #e2e6e8;
-  --rime: #b1c4cd;
-  --steel: #8e9aa1;
+  /* Sampled from the Darksign: the ground is burnt umber, never blue. */
+  --void: #0d0400;
+  --void-900: #150600;
+  --ash: #998c7d;
+  --bone: #f1e6d8;
+  --ember: #e4661c;
+  --steel: #9b9086;
   --blood: #a83424;
-  /* The fire belongs to the Darksign. Nothing else may use it. */
-  --ember: #ff7a2b;
 }
 
 * {
@@ -28,6 +27,11 @@ html {
 
 body {
   background-color: var(--void);
+  background-image: radial-gradient(
+    120% 90% at 50% 0%,
+    rgba(34, 9, 2, 0.9) 0%,
+    rgba(13, 4, 0, 0) 60%
+  );
   color: var(--bone);
   font-family: "Spectral", Georgia, "Times New Roman", serif;
   font-size: 17.5px;
@@ -37,12 +41,12 @@ body {
 }
 
 ::selection {
-  background: var(--rime);
+  background: var(--ember);
   color: var(--void);
 }
 
 :focus-visible {
-  outline: 2px solid #b1c4cd;
+  outline: 2px solid #e4661c;
   outline-offset: 3px;
 }
 
@@ -54,11 +58,11 @@ body {
   background: var(--void);
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a3038;
+  background: #3a2016;
   border: 2px solid var(--void);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #4a626e;
+  background: #96330a;
 }
 
 /* ------------------------------------------------------------------ */
@@ -96,15 +100,15 @@ body {
 
 /* Frost along the edge of the type. The only gradient the page allows
    itself now that the fire has a home. */
-.rime-text {
+.ember-text {
   background: linear-gradient(
     100deg,
-    #f2f4f5 0%,
-    #d5e2e8 20%,
-    #b1c4cd 44%,
-    #d5e2e8 60%,
-    #eef4f6 76%,
-    #8a9ea9 100%
+    #fbf4ea 0%,
+    #ffcf94 20%,
+    #e4661c 44%,
+    #ffab5e 60%,
+    #ffe9c0 76%,
+    #c44407 100%
   );
   background-size: 220% 100%;
   -webkit-background-clip: text;
@@ -120,7 +124,7 @@ body {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(142, 154, 161, 0.32),
+    rgba(155, 144, 134, 0.32),
     transparent
   );
 }
@@ -131,7 +135,7 @@ body {
   font-size: 3.6em;
   line-height: 0.82;
   padding: 0.06em 0.16em 0 0;
-  color: var(--rime);
+  color: var(--ember);
 }
 
 /* ------------------------------------------------------------------ */
@@ -162,10 +166,10 @@ body {
   background: radial-gradient(
     125% 95% at 50% 42%,
     transparent 50%,
-    rgba(0, 0, 0, 0.18) 74%,
-    rgba(0, 0, 0, 0.52) 100%
+    rgba(9, 3, 0, 0.28) 74%,
+    rgba(6, 2, 0, 0.62) 100%
   );
-  box-shadow: inset 0 0 120px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 120px 10px rgba(6, 2, 0, 0.4);
   animation: veilBreathe 16s ease-in-out infinite;
 }
 
@@ -181,7 +185,7 @@ body {
   inset: -18%;
   background: radial-gradient(
     closest-side,
-    rgba(134, 146, 156, 0.1),
+    rgba(160, 74, 30, 0.1),
     transparent 72%
   );
   animation: fogDrift 58s ease-in-out infinite alternate;
@@ -191,7 +195,7 @@ body {
   inset: -12%;
   background: radial-gradient(
     closest-side,
-    rgba(177, 196, 205, 0.075),
+    rgba(228, 102, 28, 0.075),
     transparent 70%
   );
   animation: fogDrift 74s ease-in-out infinite alternate-reverse;
@@ -201,7 +205,7 @@ body {
   inset: -22%;
   background: radial-gradient(
     closest-side,
-    rgba(102, 113, 123, 0.07),
+    rgba(90, 50, 32, 0.07),
     transparent 68%
   );
   animation: fogDrift 92s ease-in-out infinite alternate;
@@ -223,7 +227,7 @@ body {
   bottom: -3px;
   width: 0;
   height: 1px;
-  background: linear-gradient(90deg, var(--rime), rgba(177, 196, 205, 0));
+  background: linear-gradient(90deg, var(--ember), rgba(228, 102, 28, 0));
   transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -267,12 +271,12 @@ body {
   background:
     radial-gradient(
       120% 90% at 50% 0%,
-      rgba(177, 196, 205, 0.04),
+      rgba(228, 102, 28, 0.04),
       transparent 60%
     ),
-    linear-gradient(180deg, rgba(16, 19, 26, 0.92), rgba(5, 6, 10, 0.92));
+    linear-gradient(180deg, rgba(27, 11, 5, 0.92), rgba(13, 4, 0, 0.92));
   box-shadow:
-    inset 0 0 0 1px rgba(142, 154, 161, 0.14),
+    inset 0 0 0 1px rgba(155, 144, 134, 0.14),
     inset 0 0 80px rgba(0, 0, 0, 0.8);
   transition:
     box-shadow 0.7s cubic-bezier(0.16, 1, 0.3, 1),
@@ -282,9 +286,9 @@ body {
 .item-card:hover,
 .item-card:focus-within {
   box-shadow:
-    inset 0 0 0 1px rgba(213, 226, 232, 0.26),
+    inset 0 0 0 1px rgba(255, 207, 148, 0.26),
     inset 0 0 80px rgba(0, 0, 0, 0.7),
-    0 0 60px -18px rgba(177, 196, 205, 0.3);
+    0 0 60px -18px rgba(228, 102, 28, 0.3);
 }
 
 .death-title {
@@ -292,8 +296,8 @@ body {
 }
 
 
-.rime-glow {
-  animation: rimePulse 6s ease-in-out infinite;
+.ember-glow {
+  animation: emberPulse 6s ease-in-out infinite;
 }
 
 /* ------------------------------------------------------------------ */
@@ -332,7 +336,7 @@ body {
 }
 
 
-@keyframes rimePulse {
+@keyframes emberPulse {
   0%,
   100% {
     opacity: 0.55;
@@ -437,7 +441,7 @@ body {
     transform: none;
   }
 
-  .rime-text {
+  .ember-text {
     animation: none;
     background-position: 40% 50%;
   }

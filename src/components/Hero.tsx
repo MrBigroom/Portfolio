@@ -73,8 +73,8 @@ export default function Hero() {
             </div>
             <div className="mt-2 text-sm text-bone-100 md:text-[0.95rem]">
               {entry.live ? (
-                <span className="inline-flex items-start gap-2 text-rime-200">
-                  <span className="mt-[0.45em] h-1.5 w-1.5 animate-pulse rounded-full bg-rime-400" />
+                <span className="inline-flex items-start gap-2 text-ember-200">
+                  <span className="mt-[0.45em] h-1.5 w-1.5 animate-pulse rounded-full bg-ember-400" />
                   {entry.value}
                 </span>
               ) : (
@@ -92,7 +92,7 @@ export default function Hero() {
           transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
           className="flex items-center gap-4"
         >
-          <span className="display text-[10px] tracking-[0.3em] text-rime-300">
+          <span className="display text-[10px] tracking-[0.3em] text-ember-300">
             I
           </span>
           <span aria-hidden className="h-px w-12 bg-steel-700/60" />
@@ -115,7 +115,7 @@ export default function Hero() {
           <span className="block overflow-hidden pb-[0.06em]">
             <motion.span
               variants={lineVariant}
-              className="display-italic rime-text block"
+              className="display-italic ember-text block"
             >
               intelligence
             </motion.span>
@@ -141,7 +141,7 @@ export default function Hero() {
       >
         <div className="max-w-2xl">
           <p className="text-lg leading-relaxed text-bone-100 md:text-xl">
-            I&rsquo;m <span className="text-rime-200">Chan Yu Xuan</span> — a
+            I&rsquo;m <span className="text-ember-200">Chan Yu Xuan</span> — a
             final-year IT student, four months into building AI systems that
             actually ship: render orchestration for a livestreaming platform at{" "}
             <span className="text-steel-300">SNS Network</span>, local inference
@@ -151,13 +151,13 @@ export default function Hero() {
 
           <a
             href="#work"
-            className="group mt-7 inline-flex items-center gap-4 border border-steel-700/40 px-5 py-3 transition-colors duration-500 hover:border-rime-400/70 hover:bg-rime-400/[0.06]"
+            className="group mt-7 inline-flex items-center gap-4 border border-steel-700/40 px-5 py-3 transition-colors duration-500 hover:border-ember-400/70 hover:bg-ember-400/[0.06]"
           >
-            <SignMark className="h-3.5 w-3.5 text-rime-400 transition-transform duration-500 group-hover:scale-110" />
-            <span className="engraved text-[10px] text-bone-200 transition-colors group-hover:text-rime-200">
+            <SignMark className="h-3.5 w-3.5 text-ember-400 transition-transform duration-500 group-hover:scale-110" />
+            <span className="engraved text-[10px] text-bone-200 transition-colors group-hover:text-ember-200">
               Kindle the flame
             </span>
-            <span className="text-rime-300 transition-transform duration-500 group-hover:translate-y-0.5">
+            <span className="text-ember-300 transition-transform duration-500 group-hover:translate-y-0.5">
               ↓
             </span>
           </a>

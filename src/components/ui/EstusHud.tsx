@@ -22,13 +22,13 @@ export default function EstusHud() {
       aria-hidden
       className="pointer-events-none fixed bottom-6 left-3 z-40 hidden select-none mix-blend-screen md:block"
     >
-      <div className="relative h-11 w-7 drop-shadow-[0_0_18px_rgba(120,180,205,0.35)]">
+      <div className="relative h-11 w-7 drop-shadow-[0_0_18px_rgba(228,102,28,0.35)]">
         <svg viewBox="0 0 36 48" className="h-full w-full">
           <defs>
             <linearGradient id="estus-liquid" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#dceef7" />
-              <stop offset="0.45" stopColor="#7fb4cc" />
-              <stop offset="1" stopColor="#2f5f7a" />
+              <stop offset="0" stopColor="#ffe9c0" />
+              <stop offset="0.45" stopColor="#ffab5e" />
+              <stop offset="1" stopColor="#96330a" />
             </linearGradient>
             <clipPath id="estus-body">
               <path d="M13 13c0-1.4 10-1.4 10 0v2.4c4 1.9 6.2 5.2 6.2 8.7v13.4c0 4.5-4.3 7.3-11.2 7.3S6.8 41.9 6.8 37.4V24.1c0-3.5 2.2-6.8 6.2-8.7V13Z" />

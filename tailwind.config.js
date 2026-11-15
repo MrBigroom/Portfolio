@@ -4,62 +4,50 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Cold soot. The world after the fire has gone out of it.
+        // Burnt umber. Sampled from the Darksign: #100500 to #220902.
         void: {
-          950: "#05060a",
-          900: "#0a0c11",
-          800: "#10131a",
-          700: "#171b23",
-          600: "#1f242e",
-          500: "#2a3038",
+          950: "#0d0400",
+          900: "#150600",
+          800: "#1b0b05",
+          700: "#231009",
+          600: "#2c170e",
+          500: "#3a2016",
         },
-        // Lothric stone: colder still than the ash it is made of.
+        // Warm stone, for what used to be cold.
         ash: {
-          50: "#dfe5e9",
-          100: "#c6ced5",
-          200: "#a8b2bb",
-          300: "#86929c",
-          400: "#66717b",
-          500: "#4a535c",
-          600: "#313941",
+          50: "#efe7dd",
+          100: "#d8cec2",
+          200: "#b9ad9f",
+          300: "#998c7d",
+          400: "#766a5d",
+          500: "#574d43",
+          600: "#3b332c",
         },
-        // Text. Cool, but never dim — legibility outranks the colour story.
+        // Text. Cream, not chalk.
         bone: {
-          50: "#f2f4f5",
-          100: "#e2e6e8",
-          200: "#c8cfd3",
-          300: "#a2abb1",
+          50: "#fbf4ea",
+          100: "#f1e6d8",
+          200: "#dbcbb6",
+          300: "#b6a691",
         },
-        // The cold accent that used to be ember: frost on steel.
-        rime: {
-          100: "#eef4f6",
-          200: "#d5e2e8",
-          300: "#b1c4cd",
-          400: "#8a9ea9",
-          500: "#667f8c",
-          600: "#4a626e",
-          700: "#33474f",
-          800: "#1f2d33",
-        },
-        // Frames, the guard, the seal. Pewter, not brass.
-        steel: {
-          300: "#cbd2d6",
-          500: "#8e9aa1",
-          700: "#5b666c",
-        },
-        // EMBLEM ONLY. Nothing in the page chrome may use these — the fire
-        // belongs to the Darksign, and to nothing else.
+        // The fire. #c44407 and #e4661c are the reference's own ring colours.
         ember: {
-          100: "#ffe4b8",
-          200: "#ffc684",
-          300: "#ffa14f",
-          400: "#ff7a2b",
-          500: "#e85a10",
-          600: "#b83d08",
-          700: "#7d2604",
-          800: "#4a1603",
+          100: "#ffe9c0",
+          200: "#ffcf94",
+          300: "#ffab5e",
+          400: "#e4661c",
+          500: "#c44407",
+          600: "#96330a",
+          700: "#6b2408",
+          800: "#451605",
         },
-        // Death stays red. The one deliberate warmth outside the mark.
+        // Frames and rules. Pewter standing in firelight, so it reads warm.
+        steel: {
+          300: "#d8cfc4",
+          500: "#9b9086",
+          700: "#6a6058",
+        },
+        // Death stays red.
         blood: {
           400: "#cf5a43",
           500: "#a83424",
@@ -72,10 +60,10 @@ module.exports = {
         mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
       },
       boxShadow: {
-        "glow-rime": "0 0 60px -12px rgba(177,196,205,0.3)",
+        "glow-ember": "0 0 60px -12px rgba(228,102,28,0.35)",
         "glow-blood": "0 0 50px -14px rgba(168,52,36,0.45)",
         "inset-card":
-          "inset 0 0 0 1px rgba(142,154,161,0.12), inset 0 0 70px rgba(0,0,0,0.78)",
+          "inset 0 0 0 1px rgba(155,144,134,0.14), inset 0 0 70px rgba(0,0,0,0.8)",
       },
       letterSpacing: {
         widest2: "0.3em",

@@ -40,7 +40,7 @@ export default function Footer() {
             <span className="engraved block text-[8px] text-bone-300/60">
               The mark endures
             </span>
-            <span className="display mt-1 block text-sm tracking-[0.3em] text-rime-300">
+            <span className="display mt-1 block text-sm tracking-[0.3em] text-ember-300">
               ✦
             </span>
           </div>

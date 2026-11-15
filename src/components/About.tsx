@@ -24,8 +24,8 @@ export default function About() {
           <Reveal>
             <h2 className="display text-3xl leading-[1.1] text-bone-50 sm:text-4xl md:text-5xl lg:text-6xl">
               I build and operate the systems that put{" "}
-              <span className="display-italic rime-text">models</span> in front
-              of <span className="display-italic text-rime-300">real users</span>
+              <span className="display-italic ember-text">models</span> in front
+              of <span className="display-italic text-ember-300">real users</span>
               .
             </h2>
           </Reveal>
@@ -60,7 +60,7 @@ export default function About() {
             <div className="grid grid-cols-2 gap-6 border-t border-steel-700/25 pt-10 lg:grid-cols-4">
               {stats.map((stat) => (
                 <div key={stat.label} className="group">
-                  <div className="display rime-text text-4xl md:text-5xl">
+                  <div className="display ember-text text-4xl md:text-5xl">
                     <CountUp value={stat.num} />
                   </div>
                   <div className="engraved mt-2.5 text-[9px] text-bone-300">
@@ -68,7 +68,7 @@ export default function About() {
                   </div>
                   <span
                     aria-hidden
-                    className="mt-4 block h-px w-full bg-steel-700/30 transition-colors duration-500 group-hover:bg-rime-500/70"
+                    className="mt-4 block h-px w-full bg-steel-700/30 transition-colors duration-500 group-hover:bg-ember-500/70"
                   />
                 </div>
               ))}

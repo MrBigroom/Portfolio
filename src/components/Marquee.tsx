@@ -35,7 +35,7 @@ export default function Marquee() {
           <span
             key={`${item}-${index}`}
             className={`display px-5 text-xl md:text-2xl ${
-              item === "✦" ? "text-rime-500" : "text-bone-200/85"
+              item === "✦" ? "text-ember-500" : "text-bone-200/85"
             } ${index % 4 === 0 ? "display-italic" : ""}`}
           >
             {item}

@@ -29,16 +29,16 @@ export default function Skills() {
           <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {Object.entries(skills).map(([category, items], index) => (
               <Reveal key={category} delay={index * 0.06} className="h-full">
-                <div className="group relative h-full border border-steel-700/25 p-5 transition-colors duration-500 hover:border-rime-400/40 hover:bg-rime-400/[0.02] md:p-6">
+                <div className="group relative h-full border border-steel-700/25 p-5 transition-colors duration-500 hover:border-ember-400/40 hover:bg-ember-400/[0.02] md:p-6">
                   <span
                     aria-hidden
                     className="pointer-events-none absolute inset-[3px] border border-steel-500/[0.07]"
                   />
                   <div className="relative flex items-center justify-between">
-                    <span className="display text-[10px] tracking-[0.3em] text-rime-300">
+                    <span className="display text-[10px] tracking-[0.3em] text-ember-300">
                       {SLOT[index] ?? String(index + 1).padStart(2, "0")}
                     </span>
-                    <SignMark className="h-3 w-3 text-steel-500/40 transition-colors duration-500 group-hover:text-rime-400" />
+                    <SignMark className="h-3 w-3 text-steel-500/40 transition-colors duration-500 group-hover:text-ember-400" />
                   </div>
                   <h3 className="display-italic relative mt-4 text-2xl text-bone-50">
                     {category}
@@ -47,7 +47,7 @@ export default function Skills() {
                     {items.map((skill) => (
                       <span
                         key={skill}
-                        className="border border-steel-700/30 px-2.5 py-1 text-[0.95rem] leading-tight text-bone-200 transition-colors duration-300 hover:border-rime-400/50 hover:bg-rime-400/[0.05] hover:text-rime-100"
+                        className="border border-steel-700/30 px-2.5 py-1 text-[0.95rem] leading-tight text-bone-200 transition-colors duration-300 hover:border-ember-400/50 hover:bg-ember-400/[0.05] hover:text-ember-100"
                       >
                         {skill}
                       </span>

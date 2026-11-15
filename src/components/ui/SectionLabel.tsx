@@ -26,8 +26,8 @@ export default function SectionLabel({
       className={`select-none ${sticky ? "md:sticky md:top-32" : ""} ${className}`}
     >
       <div className="flex items-center gap-3">
-        <SignMark className="h-3.5 w-3.5 text-rime-400" />
-        <span className="display text-xs tracking-[0.3em] text-rime-300">
+        <SignMark className="h-3.5 w-3.5 text-ember-400" />
+        <span className="display text-xs tracking-[0.3em] text-ember-300">
           {numeral}
         </span>
         <span aria-hidden className="h-px w-8 bg-steel-500/50" />

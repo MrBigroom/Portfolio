@@ -1,22 +1,23 @@
 "use client";
 
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 import { FIRE_HUES, buildEmberSprite, clamp01 } from "@/lib/ember";
 
 /**
- * The Darksign: a ring of fire around a hole, burned over a carved brand.
+ * The Darksign: a thin, ragged ring of fire with flame licking off it, around
+ * a dark hole. Modelled on the mark as it appears burning in the dark —
+ * a white-hot line, tongues rising from it, smoke and out-of-focus sparks
+ * behind.
  *
- * Three layers, back to front — the burnt hollow, the scar, then the fire.
- * The fire is the only warm thing on this branch, so it gets the whole
- * ember ramp to itself while the rest of the page stays cold.
+ * The ring is drawn as a path rather than built from particles: particles
+ * alone read as gravel, and a blurred band reads as a hoop. A jittered line
+ * gives the torn edge, and the flame is what moves.
  */
 
 const VIEW = 400;
 const RING = 140; // centreline radius, viewBox units
-const BAND = 30; // how thick the band is at birth
-const HOLE = 116;
-const BRAND_R = RING + 34; // the scar sits outside the fire's reach // nothing burns inside this
+const BRAND_R = RING + 30; // the scar, just outside the fire's reach
 
 /* ------------------------------------------------------------------ */
 /* The carved brand (deterministic)                                    */
@@ -36,25 +37,12 @@ function arcPath(radius: number, from: number, to: number) {
   return `M${a.x.toFixed(1)} ${a.y.toFixed(1)}A${radius} ${radius} 0 ${large} 1 ${b.x.toFixed(1)} ${b.y.toFixed(1)}`;
 }
 
-/** Four arcs with gaps — a brand, not a drawn circle. */
 const BRAND_ARCS = [
-  [-16, 62],
-  [96, 158],
-  [186, 244],
-  [272, 338],
+  [-14, 74],
+  [82, 168],
+  [176, 252],
+  [260, 344],
 ].map(([from, to]) => arcPath(BRAND_R, from, to));
-
-/** Nicks across the scar, where the brand tore. */
-const BRAND_NICKS = [-38, 46, 132, 214, 298].map((deg) => {
-  const rad = (deg * Math.PI) / 180;
-  const inner = BRAND_R - 9;
-  const outer = BRAND_R + 9;
-  return `M${(VIEW / 2 + inner * Math.cos(rad)).toFixed(1)} ${(VIEW / 2 + inner * Math.sin(rad)).toFixed(1)}L${(VIEW / 2 + outer * Math.cos(rad)).toFixed(1)} ${(VIEW / 2 + outer * Math.sin(rad)).toFixed(1)}`;
-});
-
-/* ------------------------------------------------------------------ */
-/* The fire                                                            */
-/* ------------------------------------------------------------------ */
 
 type Cell = {
   x: number;
@@ -67,6 +55,12 @@ type Cell = {
   seed: number;
 };
 
+type Mote = { x: number; y: number; size: number; alpha: number; phase: number };
+
+/* ------------------------------------------------------------------ */
+/* The fire                                                            */
+/* ------------------------------------------------------------------ */
+
 function DarksignFire({ className = "" }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const reduced = useReducedMotion();
@@ -78,9 +72,15 @@ function DarksignFire({ className = "" }: { className?: string }) {
     if (!ctx) return;
 
     const sprites = FIRE_HUES.map((hue) => buildEmberSprite(hue, 96));
+    const smokeSprite = buildEmberSprite(
+      { core: "150, 118, 96", mid: "110, 82, 64", edge: "60, 42, 30" },
+      96,
+    );
+
     const mobile = window.matchMedia("(max-width: 767px)").matches;
-    const FLAME_MAX = mobile ? 190 : 460;
-    const EMBER_MAX = mobile ? 16 : 40;
+    const FLAME_MAX = mobile ? 170 : 380;
+    const SPARK_MAX = mobile ? 30 : 70;
+    const SMOKE_MAX = mobile ? 7 : 14;
 
     let width = 0;
     let height = 0;
@@ -88,99 +88,100 @@ function DarksignFire({ className = "" }: { className?: string }) {
     let cx = 0;
     let cy = 0;
     let flames: Cell[] = [];
-    let embers: Cell[] = [];
+    let sparks: Cell[] = [];
+    let smoke: Cell[] = [];
+    let bokeh: Mote[] = [];
     let flameDebt = 0;
-    let emberDebt = 0;
+    let sparkDebt = 0;
+    let smokeDebt = 0;
     let clock = 0;
     let raf = 0;
     let previous = performance.now();
     let onScreen = true;
 
-    const onRing = () => {
-      const theta = Math.random() * Math.PI * 2;
-      const radius = (RING + (Math.random() - 0.5) * BAND) * scale;
+    /** The ring is not a circle: it is torn, and thicker in places. */
+    const ringRadius = (theta: number) =>
+      RING *
+      (1 +
+        0.016 * Math.sin(theta * 3 + 0.7) +
+        0.01 * Math.sin(theta * 7 + 2.1) +
+        0.007 * Math.sin(theta * 13 + 4.3)) *
+      scale;
+
+    const ringPoint = (theta: number) => {
+      const radius = ringRadius(theta);
       return {
-        theta,
         x: cx + Math.cos(theta) * radius,
         y: cy + Math.sin(theta) * radius,
+        radius,
       };
     };
+
+    // Tongues come from a handful of hot spots that drift; spawning evenly
+    // around the ring can only ever produce a halo.
+    // Biased to the upper half — fire climbs, it does not sit level.
+    const anchors = [-2.5, -1.95, -1.35, -0.6, 0.75, 2.35];
+    const anchorAt = (index: number) =>
+      anchors[index] + Math.sin(clock * 0.28 + index * 1.9) * 0.42;
 
     const spawnFlame = (): Cell => {
-      const at = onRing();
-      const outward = (8 + Math.random() * 26) * scale;
+      const theta =
+        anchorAt(Math.floor(Math.random() * anchors.length)) +
+        (Math.random() - 0.5) * 0.42;
+      const at = ringPoint(theta);
+      // Tallest at the top of the ring, shortest at the foot: fire climbs, and
+      // flames off the bottom would only fill the hole.
+      const height = (1 - Math.sin(theta)) / 2;
+      const reach = 0.45 + 0.8 * height;
       return {
         x: at.x,
         y: at.y,
-        vx: Math.cos(at.theta) * outward,
-        vy: Math.sin(at.theta) * outward - 18 * scale,
-        size: (13 + Math.random() * 24) * scale,
+        vx: Math.cos(theta) * (26 + Math.random() * 44) * scale,
+        vy: -(50 + Math.random() * 95) * scale * (0.55 + 0.6 * height),
+        size: (16 + Math.random() * 30) * scale * (0.75 + 0.45 * height),
         age: 0,
-        ttl: 0.8 + Math.random() * 0.7,
+        ttl: (0.7 + Math.random() * 0.6) * reach,
         seed: Math.random() * Math.PI * 2,
       };
     };
 
-    const spawnEmber = (): Cell => {
-      const at = onRing();
+    const spawnSpark = (): Cell => {
+      const theta = Math.random() * Math.PI * 2;
+      const at = ringPoint(theta);
       return {
         x: at.x,
         y: at.y,
-        vx: Math.cos(at.theta) * (16 + Math.random() * 34) * scale,
-        vy: Math.sin(at.theta) * 16 * scale - (40 + Math.random() * 55) * scale,
-        size: (1.5 + Math.random() * 2.4) * scale,
+        vx: (Math.random() - 0.5) * 26 * scale,
+        vy: -(30 + Math.random() * 70) * scale,
+        size: (1 + Math.random() * 2.2) * scale,
         age: 0,
-        ttl: 1.3 + Math.random() * 1.5,
+        ttl: 1.2 + Math.random() * 1.8,
         seed: Math.random() * Math.PI * 2,
       };
     };
 
-    const advance = (
-      cell: Cell,
-      delta: number,
-      ttlLife: number,
-      buoyancy: number,
-    ) => {
+    const spawnSmoke = (): Cell => {
+      const theta = Math.random() * Math.PI * 2;
+      const at = ringPoint(theta);
+      return {
+        x: at.x,
+        y: at.y,
+        vx: (Math.random() - 0.5) * 10 * scale,
+        vy: -(12 + Math.random() * 24) * scale,
+        size: (50 + Math.random() * 70) * scale,
+        age: 0,
+        ttl: 2.4 + Math.random() * 1.8,
+        seed: Math.random() * Math.PI * 2,
+      };
+    };
+
+    const advance = (cell: Cell, delta: number, buoyancy: number) => {
       cell.age += delta;
-      const dx = cell.x - cx;
-      const dy = cell.y - cy;
-      const distance = Math.hypot(dx, dy) || 1;
-      const nx = dx / distance;
-      const ny = dy / distance;
-
-      // A weak spring back to the ring: without it the buoyancy pulls the
-      // whole band upward and the mark stops reading as a circle.
-      const offset = distance - RING * scale;
-      cell.vx -= nx * offset * 1.3 * delta;
-      cell.vy -= ny * offset * 1.3 * delta;
-
-      // Lick around the hoop rather than straight up.
-      const spin = 16 * scale;
-      cell.vx += -ny * spin * delta;
-      cell.vy += nx * spin * delta;
-
-      // And upward, into the air, where a flame belongs.
       cell.vy -= buoyancy * scale * delta;
-
-      // Turbulence, so the rim tears instead of glowing evenly.
-      cell.vx += Math.sin(clock * 1.7 + cell.seed) * 26 * scale * delta;
-
-      // Never burn inside the hole. This is the mark.
-      const holeRadius = HOLE * scale;
-      if (distance < holeRadius) {
-        cell.x = cx + nx * holeRadius;
-        cell.y = cy + ny * holeRadius;
-        const inward = cell.vx * nx + cell.vy * ny;
-        if (inward < 0) {
-          cell.vx -= nx * inward;
-          cell.vy -= ny * inward;
-        }
-      }
-
-      const drag = 1 - 1.9 * ttlLife * delta;
+      cell.vx += Math.sin(clock * 1.6 + cell.seed) * 30 * scale * delta;
+      const drag = 1 - 1.5 * delta;
       cell.vx *= Math.max(0, drag);
-      cell.vy *= Math.max(0, drag * 0.92);
-
+      cell.vy *= Math.max(0, drag * 0.96);
       cell.x += cell.vx * delta;
       cell.y += cell.vy * delta;
     };
@@ -188,42 +189,17 @@ function DarksignFire({ className = "" }: { className?: string }) {
     const draw = () => {
       if (width < 4 || height < 4) return;
       ctx.clearRect(0, 0, width, height);
-      ctx.globalCompositeOperation = "lighter";
 
-      // A continuous band for the particles to break up. Without it the ring
-      // is gravel; with it, the gravel reads as flame licking off a hoop.
-      const breath = 0.84 + 0.16 * Math.sin(clock * 1.4);
-      const radius = RING * scale;
+      const breath = 0.86 + 0.1 * Math.sin(clock * 2.2) + 0.04 * Math.sin(clock * 7.3);
 
-      // Blurred, or the band reads as a drawn hoop instead of heat.
-      ctx.filter = `blur(${Math.round(radius * 0.1)}px)`;
-
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(206, 66, 12, ${0.26 * breath})`;
-      ctx.lineWidth = radius * 0.62;
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(255, 132, 38, ${0.34 * breath})`;
-      ctx.lineWidth = radius * 0.3;
-      ctx.stroke();
-
-      ctx.filter = "none";
-
-      for (const cell of flames) {
+      // Smoke first — it belongs behind everything.
+      ctx.globalCompositeOperation = "source-over";
+      for (const cell of smoke) {
         const t = cell.age / cell.ttl;
-        const band = Math.min(
-          sprites.length - 1,
-          Math.floor(t * sprites.length),
-        );
-        const size = cell.size * (0.7 + 0.7 * t);
-        const alpha = 0.8 * Math.min(1, t * 10) * Math.pow(1 - t, 0.6);
-        if (alpha <= 0.004) continue;
-        ctx.globalAlpha = alpha;
+        const size = cell.size * (0.6 + 1.2 * t);
+        ctx.globalAlpha = Math.sin(Math.PI * t) * 0.1;
         ctx.drawImage(
-          sprites[band],
+          smokeSprite,
           cell.x - size / 2,
           cell.y - size / 2,
           size,
@@ -231,15 +207,73 @@ function DarksignFire({ className = "" }: { className?: string }) {
         );
       }
 
-      for (const cell of embers) {
+      ctx.globalCompositeOperation = "lighter";
+
+      // Out-of-focus sparks in the air around the mark.
+      for (const mote of bokeh) {
+        const drift = Math.sin(clock * 0.5 + mote.phase) * 6 * scale;
+        const size = mote.size * scale;
+        ctx.globalAlpha = mote.alpha * (0.7 + 0.3 * Math.sin(clock * 0.9 + mote.phase));
+        ctx.drawImage(
+          sprites[0],
+          mote.x + drift - size / 2,
+          mote.y - size / 2,
+          size,
+          size,
+        );
+      }
+
+      // The ring itself: a ragged, blazing line.
+      const steps = 200;
+      const path = new Path2D();
+      for (let index = 0; index <= steps; index += 1) {
+        const theta = (index / steps) * Math.PI * 2;
+        const point = ringPoint(theta);
+        if (index === 0) path.moveTo(point.x, point.y);
+        else path.lineTo(point.x, point.y);
+      }
+      path.closePath();
+
+      ctx.filter = `blur(${Math.round(7 * scale)}px)`;
+      ctx.strokeStyle = `rgba(196, 68, 7, ${0.55 * breath})`;
+      ctx.lineWidth = 11 * scale;
+      ctx.stroke(path);
+      ctx.filter = "none";
+
+      ctx.strokeStyle = `rgba(228, 102, 28, ${0.9 * breath})`;
+      ctx.lineWidth = 2.6 * scale;
+      ctx.stroke(path);
+
+      ctx.strokeStyle = `rgba(255, 236, 196, 1)`;
+      ctx.lineWidth = 1.7 * scale;
+      ctx.stroke(path);
+
+      // Flame licking off it.
+      for (const cell of flames) {
         const t = cell.age / cell.ttl;
         const band = Math.min(
           sprites.length - 1,
           Math.floor(t * sprites.length),
         );
-        const alpha = Math.sin(Math.PI * clamp01(t)) * 0.95;
+        const size = cell.size * (0.65 + 0.85 * t);
+        const alpha = 0.46 * Math.min(1, t * 9) * Math.pow(1 - t, 0.8);
         if (alpha <= 0.004) continue;
-        const size = cell.size * (1 - 0.4 * t);
+        ctx.globalAlpha = alpha;
+        // Tall and narrow: a lick of flame, not a bead of light.
+        const w = size * 0.62;
+        const h = size * 1.95;
+        ctx.drawImage(sprites[band], cell.x - w / 2, cell.y - h / 2, w, h);
+      }
+
+      for (const cell of sparks) {
+        const t = cell.age / cell.ttl;
+        const band = Math.min(
+          sprites.length - 1,
+          Math.floor(t * sprites.length),
+        );
+        const alpha = Math.sin(Math.PI * clamp01(t)) * 0.9;
+        if (alpha <= 0.004) continue;
+        const size = cell.size * (1 - 0.35 * t);
         ctx.globalAlpha = alpha;
         ctx.drawImage(
           sprites[band],
@@ -259,23 +293,32 @@ function DarksignFire({ className = "" }: { className?: string }) {
       clock += delta;
 
       flameDebt += (FLAME_MAX / 1.05) * delta;
-      emberDebt += (EMBER_MAX / 2.2) * delta;
+      sparkDebt += (SPARK_MAX / 2) * delta;
+      smokeDebt += (SMOKE_MAX / 3.4) * delta;
 
       while (flameDebt >= 1) {
         if (flames.length < FLAME_MAX + 40) flames.push(spawnFlame());
         flameDebt -= 1;
       }
-      while (emberDebt >= 1) {
-        if (embers.length < EMBER_MAX + 12) embers.push(spawnEmber());
-        emberDebt -= 1;
+      while (sparkDebt >= 1) {
+        if (sparks.length < SPARK_MAX + 16) sparks.push(spawnSpark());
+        sparkDebt -= 1;
+      }
+      while (smokeDebt >= 1) {
+        if (smoke.length < SMOKE_MAX + 8) smoke.push(spawnSmoke());
+        smokeDebt -= 1;
       }
 
       flames = flames.filter((cell) => {
-        advance(cell, delta, cell.age / cell.ttl, 30);
+        advance(cell, delta, 105);
         return cell.age < cell.ttl;
       });
-      embers = embers.filter((cell) => {
-        advance(cell, delta, cell.age / cell.ttl, 14);
+      sparks = sparks.filter((cell) => {
+        advance(cell, delta, 55);
+        return cell.age < cell.ttl;
+      });
+      smoke = smoke.filter((cell) => {
+        advance(cell, delta, 18);
         return cell.age < cell.ttl;
       });
     };
@@ -300,19 +343,26 @@ function DarksignFire({ className = "" }: { className?: string }) {
     };
 
     const seedStill = () => {
-      // One honest frame: an even ring, already lit, that does not move.
-      const count = mobile ? 96 : 190;
+      // A lit mark that does not move: flames already part-way up, so the
+      // shape reads the same as it does in motion.
+      const count = mobile ? 90 : 190;
       flames = Array.from({ length: count }, (_, index) => {
         const cell = spawnFlame();
-        const theta = (index / count) * Math.PI * 2 + Math.random() * 0.12;
-        const radius = (RING + (Math.random() - 0.5) * BAND) * scale;
-        cell.x = cx + Math.cos(theta) * radius;
-        cell.y = cy + Math.sin(theta) * radius;
+        const theta = (index / count) * Math.PI * 2 + Math.random() * 0.1;
+        const at = ringPoint(theta);
+        cell.x = at.x;
+        cell.y = at.y;
+        cell.age = Math.random() * cell.ttl;
+        cell.y -= Math.random() * 40 * scale;
+        return cell;
+      });
+      sparks = Array.from({ length: mobile ? 16 : 40 }, () => {
+        const cell = spawnSpark();
         cell.age = Math.random() * cell.ttl;
         return cell;
       });
-      embers = Array.from({ length: mobile ? 12 : 30 }, () => {
-        const cell = spawnEmber();
+      smoke = Array.from({ length: 10 }, () => {
+        const cell = spawnSmoke();
         cell.age = Math.random() * cell.ttl;
         return cell;
       });
@@ -334,9 +384,24 @@ function DarksignFire({ className = "" }: { className?: string }) {
       // zero-sized canvas and seeding it would divide by zero.
       if (width < 4 || height < 4) {
         flames = [];
-        embers = [];
+        sparks = [];
+        smoke = [];
+        bokeh = [];
         return;
       }
+
+      bokeh = Array.from({ length: 14 }, () => {
+        const theta = Math.random() * Math.PI * 2;
+        const radius = (RING + 40 + Math.random() * 90) * scale;
+        return {
+          x: cx + Math.cos(theta) * radius,
+          y: cy + Math.sin(theta) * radius * 0.9,
+          size: 6 + Math.random() * 16,
+          alpha: 0.05 + Math.random() * 0.12,
+          phase: Math.random() * Math.PI * 2,
+        };
+      });
+
       if (reduced) seedStill();
     };
 
@@ -379,49 +444,31 @@ function DarksignFire({ className = "" }: { className?: string }) {
 /* ------------------------------------------------------------------ */
 
 export default function Darksign({ className = "" }: { className?: string }) {
-  const uid = useId().replace(/[:]/g, "");
-  const glow = `ds-glow-${uid}`;
-
   return (
     <div className={`relative ${className}`} aria-hidden>
-      <defs>
-        <radialGradient id={glow} cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0.55" stopColor="#1a0709" stopOpacity="0.95" />
-          <stop offset="0.8" stopColor="#1a0709" stopOpacity="0.55" />
-          <stop offset="1" stopColor="#1a0709" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-
-      {/* The hollow: burned through, not left empty. */}
+      {/* The hollow: dark, with the fire's warmth bleeding a little way in. */}
       <div
         className="absolute inset-0 rounded-full"
         style={{
-          background: `radial-gradient(circle, rgba(8,4,6,0.92) 0%, rgba(8,4,6,0.55) 40%, transparent 58%)`,
+          background:
+            "radial-gradient(circle, rgba(20, 6, 0, 0.97) 0%, rgba(22, 7, 0, 0.9) 52%, rgba(120, 34, 6, 0.12) 64%, transparent 74%)",
         }}
       />
 
-      {/* The carved brand, sitting under the flame. */}
+      {/* The scar, faint, sitting outside the flame. */}
       <svg
         viewBox="0 0 400 400"
         fill="none"
         className="absolute inset-0 h-full w-full"
       >
         <g
-          stroke="#66717b"
-          strokeOpacity="0.3"
-          strokeWidth="2.4"
+          stroke="#998c7d"
+          strokeOpacity="0.09"
+          strokeWidth="2"
           strokeLinecap="round"
         >
           {BRAND_ARCS.map((d, index) => (
             <path key={`arc-${index}`} d={d} />
-          ))}
-          {BRAND_NICKS.map((d, index) => (
-            <path
-              key={`nick-${index}`}
-              d={d}
-              strokeOpacity="0.22"
-              strokeWidth="1.6"
-            />
           ))}
         </g>
       </svg>

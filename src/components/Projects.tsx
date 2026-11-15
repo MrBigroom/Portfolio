@@ -34,10 +34,10 @@ function Corners() {
 function ProjectCard({ project, idx }: { project: Project; idx: number }) {
   const reversed = idx % 2 === 1;
   const accentText =
-    project.accent === "ember" ? "text-rime-300" : "text-blood-400";
+    project.accent === "ember" ? "text-ember-300" : "text-blood-400";
   const accentLine =
     project.accent === "ember"
-      ? "from-rime-500/70 via-rime-400/20"
+      ? "from-ember-500/70 via-ember-400/20"
       : "from-blood-500/70 via-blood-400/20";
   const showStatus = !project.kind
     .toLowerCase()
@@ -70,7 +70,7 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
               </span>
             )}
             {project.featured && (
-              <span className="engraved bg-rime-500 px-2 py-1 text-[8px] text-void-950">
+              <span className="engraved bg-ember-500 px-2 py-1 text-[8px] text-void-950">
                 Branded
               </span>
             )}
@@ -114,7 +114,7 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
                   whileInView={{ scaleX: 1 }}
                   viewport={{ once: true, margin: "-60px" }}
                   transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-                  className="h-full w-full origin-left bg-gradient-to-r from-rime-600 via-rime-300 to-rime-600/10"
+                  className="h-full w-full origin-left bg-gradient-to-r from-ember-600 via-ember-300 to-ember-600/10"
                 />
               </div>
               <div className="engraved mt-2 text-[8px] text-steel-500">
@@ -158,7 +158,7 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
                   key={index}
                   className="flex gap-3 text-sm leading-relaxed text-bone-200"
                 >
-                  <SignMark className="mt-[0.15em] h-3 w-3 shrink-0 text-rime-500/80" />
+                  <SignMark className="mt-[0.15em] h-3 w-3 shrink-0 text-ember-500/80" />
                   <span>{highlight}</span>
                 </li>
               ))}
@@ -183,7 +183,7 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
               {project.tech.map((tech) => (
                 <span
                   key={tech}
-                  className="mono border border-steel-700/35 px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-bone-200 transition-colors duration-300 hover:border-rime-400/60 hover:text-rime-200"
+                  className="mono border border-steel-700/35 px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-bone-200 transition-colors duration-300 hover:border-ember-400/60 hover:text-ember-200"
                 >
                   {tech}
                 </span>
@@ -207,7 +207,7 @@ function ProjectCard({ project, idx }: { project: Project; idx: number }) {
                     <a
                       key={link.url}
                       href={link.url}
-                      className="magnetic text-bone-300 transition-colors hover:text-rime-200"
+                      className="magnetic text-bone-300 transition-colors hover:text-ember-200"
                     >
                       {link.label} ↗
                     </a>

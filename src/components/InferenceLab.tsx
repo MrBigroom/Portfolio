@@ -37,7 +37,7 @@ export default function InferenceLab() {
           <Reveal>
             <h2 className="display text-3xl leading-[1.06] text-bone-50 sm:text-4xl md:text-5xl lg:text-6xl">
               {labIntro.headline} <br />
-              <span className="display-italic rime-text">
+              <span className="display-italic ember-text">
                 {labIntro.headlineItalic}
               </span>
             </h2>
@@ -54,7 +54,7 @@ export default function InferenceLab() {
               <span className="engraved text-[9px] text-bone-300/70">
                 One consumer card
               </span>
-              <span className="mono text-[10px] uppercase tracking-[0.15em] text-rime-300">
+              <span className="mono text-[10px] uppercase tracking-[0.15em] text-ember-300">
                 8 GB
               </span>
             </div>
@@ -64,7 +64,7 @@ export default function InferenceLab() {
                 whileInView={{ scaleX: 1 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
-                className="h-full w-full origin-left bg-gradient-to-r from-rime-700 via-rime-400 to-rime-300"
+                className="h-full w-full origin-left bg-gradient-to-r from-ember-700 via-ember-400 to-ember-300"
               />
             </div>
           </Reveal>
@@ -78,7 +78,7 @@ export default function InferenceLab() {
               >
                 <div className="item-card flex h-full flex-col p-6 md:p-7">
                   <div className="flex items-center justify-between">
-                    <span className="display text-xs tracking-[0.3em] text-rime-300">
+                    <span className="display text-xs tracking-[0.3em] text-ember-300">
                       {ROMAN[index]}
                     </span>
                     <SignMark className="h-3 w-3 text-steel-500/60" />
@@ -125,7 +125,7 @@ export default function InferenceLab() {
               {models.map((model) => (
                 <div
                   key={model.name}
-                  className="grid grid-cols-1 gap-x-4 gap-y-1 border-b border-steel-700/15 py-4 transition-colors duration-300 hover:bg-rime-400/[0.03] lg:grid-cols-12 lg:items-baseline lg:border-l lg:border-l-transparent lg:pl-3 lg:hover:border-l-rime-500/60"
+                  className="grid grid-cols-1 gap-x-4 gap-y-1 border-b border-steel-700/15 py-4 transition-colors duration-300 hover:bg-ember-400/[0.03] lg:grid-cols-12 lg:items-baseline lg:border-l lg:border-l-transparent lg:pl-3 lg:hover:border-l-ember-500/60"
                 >
                   <div className="lg:col-span-4">
                     <span className="mono mb-1 block text-[9px] uppercase tracking-[0.18em] text-bone-300/50 lg:hidden">
@@ -147,7 +147,7 @@ export default function InferenceLab() {
                     <span className="mono mr-2 text-[9px] uppercase tracking-[0.18em] text-bone-300/50 lg:hidden">
                       Quant
                     </span>
-                    <span className="mono text-xs text-rime-300">
+                    <span className="mono text-xs text-ember-300">
                       {model.quant}
                     </span>
                   </div>
@@ -175,7 +175,7 @@ export default function InferenceLab() {
           <Reveal className="mt-12">
             <div className="item-card p-6 md:p-8">
               <div className="flex flex-wrap items-baseline justify-between gap-3">
-                <div className="engraved text-[9px] text-rime-300">
+                <div className="engraved text-[9px] text-ember-300">
                   Expert offload
                 </div>
                 <div className="mono text-[10px] uppercase tracking-[0.15em] text-bone-300/70">
@@ -192,7 +192,7 @@ export default function InferenceLab() {
                     key={index}
                     className={`h-4 ${
                       index < OFFLOADED
-                        ? "bg-gradient-to-t from-rime-700/70 to-rime-300/90"
+                        ? "bg-gradient-to-t from-ember-700/70 to-ember-300/90"
                         : "bg-void-600"
                     }`}
                   />
@@ -210,7 +210,7 @@ export default function InferenceLab() {
             {labMeasured.map((measure) => (
               <div key={measure.label}>
                 <div className="flex items-baseline gap-2">
-                  <span className="display rime-text text-4xl md:text-5xl">
+                  <span className="display ember-text text-4xl md:text-5xl">
                     <CountUp value={measure.value} />
                   </span>
                   <span className="mono text-sm text-bone-300">

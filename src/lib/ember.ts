@@ -17,12 +17,12 @@ export const FIRE_HUES: EmberHue[] = [
   { core: "210, 96, 48", mid: "125, 38, 4", edge: "74, 22, 3" },
 ];
 
-/** Cold. Ash without a fire under it. */
+/** Warm grey — ash drifting through firelight rather than cold cinders. */
 export const ASH_HUES: EmberHue[] = [
-  { core: "226, 232, 236", mid: "168, 178, 187", edge: "96, 104, 112" },
-  { core: "198, 206, 213", mid: "134, 146, 156", edge: "74, 83, 92" },
-  { core: "168, 178, 187", mid: "102, 113, 123", edge: "48, 57, 65" },
-  { core: "120, 130, 140", mid: "60, 72, 82", edge: "30, 36, 42" },
+  { core: "243, 231, 214", mid: "196, 176, 150", edge: "120, 100, 80" },
+  { core: "214, 198, 176", mid: "160, 140, 118", edge: "96, 78, 60" },
+  { core: "180, 162, 140", mid: "128, 108, 88", edge: "70, 56, 42" },
+  { core: "132, 114, 94", mid: "86, 70, 54", edge: "42, 32, 24" },
 ];
 
 export function buildEmberSprite(hue: EmberHue, size = 64): HTMLCanvasElement {
