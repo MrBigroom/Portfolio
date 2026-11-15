@@ -52,7 +52,7 @@ function DarksignFire({ className = "" }: { className?: string }) {
     );
 
     const mobile = window.matchMedia("(max-width: 767px)").matches;
-    const FLAME_MAX = mobile ? 200 : 470;
+    const FLAME_MAX = mobile ? 300 : 760;
     const SPARK_MAX = mobile ? 30 : 70;
     const SMOKE_MAX = mobile ? 7 : 14;
 
@@ -65,6 +65,7 @@ function DarksignFire({ className = "" }: { className?: string }) {
     let sparks: Cell[] = [];
     let smoke: Cell[] = [];
     let bokeh: Mote[] = [];
+    let glowLayer: HTMLCanvasElement | null = null;
     let flameDebt = 0;
     let sparkDebt = 0;
     let smokeDebt = 0;
@@ -74,13 +75,37 @@ function DarksignFire({ className = "" }: { className?: string }) {
     let onScreen = true;
 
     /** The ring is not a circle: it is torn, and thicker in places. */
-    const ringRadius = (theta: number) =>
-      RING *
-      (1 +
-        0.016 * Math.sin(theta * 3 + 0.7) +
-        0.01 * Math.sin(theta * 7 + 2.1) +
-        0.007 * Math.sin(theta * 13 + 4.3)) *
-      scale;
+    // Deterministic per-vertex noise. Summed sines at this scale read as
+    // flat facets — harmonics are too regular to look torn.
+    const hash = (n: number) => {
+      const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+      return x - Math.floor(x);
+    };
+    const RING_STEPS = 220;
+    const ringRadius = (theta: number) => {
+      const index = (theta / (Math.PI * 2)) * RING_STEPS;
+      const base = Math.floor(index);
+      const frac = index - base;
+      const smooth = frac * frac * (3 - 2 * frac);
+      const a = hash(base);
+      const b = hash(base + 1);
+      const wobble = (a + (b - a) * smooth - 0.5) * 0.016;
+      return RING * (1 + wobble) * scale;
+    };
+
+    const ringPath = () => {
+      const path = new Path2D();
+      for (let index = 0; index <= RING_STEPS; index += 1) {
+        const theta = (index / RING_STEPS) * Math.PI * 2;
+        const radius = ringRadius(theta);
+        const x = cx + Math.cos(theta) * radius;
+        const y = cy + Math.sin(theta) * radius;
+        if (index === 0) path.moveTo(x, y);
+        else path.lineTo(x, y);
+      }
+      path.closePath();
+      return path;
+    };
 
     const ringPoint = (theta: number) => {
       const radius = ringRadius(theta);
@@ -104,8 +129,8 @@ function DarksignFire({ className = "" }: { className?: string }) {
         x: at.x,
         y: at.y,
         vx: Math.cos(theta) * (26 + Math.random() * 44) * scale,
-        vy: -(50 + Math.random() * 95) * scale * (0.55 + 0.6 * height),
-        size: (16 + Math.random() * 30) * scale * (0.88 + 0.3 * height),
+        vy: -(58 + Math.random() * 115) * scale * (0.55 + 0.6 * height),
+        size: (17 + Math.random() * 32) * scale * (0.88 + 0.3 * height),
         age: 0,
         ttl: (0.7 + Math.random() * 0.6) * reach,
         seed: Math.random() * Math.PI * 2,
@@ -190,40 +215,37 @@ function DarksignFire({ className = "" }: { className?: string }) {
         );
       }
 
-      // The ring itself: a ragged, blazing line.
-      const steps = 200;
-      const path = new Path2D();
-      for (let index = 0; index <= steps; index += 1) {
-        const theta = (index / steps) * Math.PI * 2;
-        const point = ringPoint(theta);
-        if (index === 0) path.moveTo(point.x, point.y);
-        else path.lineTo(point.x, point.y);
-      }
-      path.closePath();
+      // The ring itself: a ragged, blazing line. The bloom is pre-rendered
+      // once per resize — re-blurring a 13px stroke every frame is the most
+      // expensive thing this canvas could do.
+      const path = ringPath();
 
-      ctx.filter = `blur(${Math.round(7 * scale)}px)`;
-      ctx.strokeStyle = `rgba(196, 68, 7, ${0.55 * breath})`;
-      ctx.lineWidth = 11 * scale;
-      ctx.stroke(path);
-      ctx.filter = "none";
+      if (glowLayer) {
+        ctx.globalAlpha = 0.72 * breath;
+        ctx.drawImage(glowLayer, 0, 0, width, height);
+        ctx.globalAlpha = 1;
+      }
 
       ctx.strokeStyle = `rgba(228, 102, 28, ${0.9 * breath})`;
       ctx.lineWidth = 2.6 * scale;
       ctx.stroke(path);
 
-      ctx.strokeStyle = `rgba(255, 236, 196, 1)`;
-      ctx.lineWidth = 1.7 * scale;
+      // Warm and slightly soft: a bare cream line reads as a drawn circle
+      // where the flame thins over it.
+      ctx.strokeStyle = `rgba(255, 214, 150, ${0.85 * breath})`;
+      ctx.lineWidth = 1.3 * scale;
       ctx.stroke(path);
 
       // Flame licking off it.
       for (const cell of flames) {
         const t = cell.age / cell.ttl;
+        const heat = Math.pow(t, 0.7);
         const band = Math.min(
           sprites.length - 1,
-          Math.floor(t * sprites.length),
+          Math.floor(heat * sprites.length),
         );
         const size = cell.size * (0.65 + 0.85 * t);
-        const alpha = 0.46 * Math.min(1, t * 9) * Math.pow(1 - t, 0.8);
+        const alpha = 0.4 * Math.min(1, t * 9) * Math.pow(1 - t, 0.8);
         if (alpha <= 0.004) continue;
         ctx.globalAlpha = alpha;
         // Tall and narrow: a lick of flame, not a bead of light.
@@ -368,6 +390,21 @@ function DarksignFire({ className = "" }: { className?: string }) {
           phase: Math.random() * Math.PI * 2,
         };
       });
+
+      glowLayer = (() => {
+        const layer = document.createElement("canvas");
+        layer.width = canvas.width;
+        layer.height = canvas.height;
+        const g = layer.getContext("2d");
+        if (!g) return null;
+        const dpr = canvas.width / Math.max(1, width);
+        g.setTransform(dpr, 0, 0, dpr, 0, 0);
+        g.filter = `blur(${Math.round(9 * scale)}px)`;
+        g.strokeStyle = "rgba(214, 78, 10, 1)";
+        g.lineWidth = 13 * scale;
+        g.stroke(ringPath());
+        return layer;
+      })();
 
       if (reduced) seedStill();
     };
