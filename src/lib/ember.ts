@@ -44,5 +44,56 @@ export function buildEmberSprite(hue: EmberHue, size = 64): HTMLCanvasElement {
   return canvas;
 }
 
+/**
+ * An ember is a flake, not a sphere. A soft halo with a few hot, irregular
+ * chips inside it — the chips are ellipses at random angles, so no two embers
+ * share a silhouette.
+ */
+export function buildEmberFleck(hue: EmberHue, size = 32): HTMLCanvasElement {
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return canvas;
+
+  const centre = size / 2;
+  const radius = size / 2;
+
+  const halo = ctx.createRadialGradient(centre, centre, 0, centre, centre, radius);
+  halo.addColorStop(0, `rgba(${hue.core}, 0.3)`);
+  halo.addColorStop(0.3, `rgba(${hue.mid}, 0.12)`);
+  halo.addColorStop(1, `rgba(${hue.edge}, 0)`);
+  ctx.fillStyle = halo;
+  ctx.fillRect(0, 0, size, size);
+
+  ctx.globalCompositeOperation = "lighter";
+  const chips = 4 + Math.floor(Math.random() * 3);
+  for (let index = 0; index < chips; index += 1) {
+    const angle = Math.random() * Math.PI * 2;
+    const distance = Math.random() * radius * 0.42;
+    const x = centre + Math.cos(angle) * distance;
+    const y = centre + Math.sin(angle) * distance * 0.72;
+    const chip = radius * (0.1 + Math.random() * 0.19);
+    const core = ctx.createRadialGradient(x, y, 0, x, y, chip);
+    core.addColorStop(0, `rgba(${hue.core}, 1)`);
+    core.addColorStop(0.48, `rgba(${hue.mid}, 0.7)`);
+    core.addColorStop(1, `rgba(${hue.edge}, 0)`);
+    ctx.fillStyle = core;
+    ctx.beginPath();
+    ctx.ellipse(
+      x,
+      y,
+      chip,
+      chip * (0.5 + Math.random() * 0.65),
+      Math.random() * Math.PI,
+      0,
+      Math.PI * 2,
+    );
+    ctx.fill();
+  }
+
+  return canvas;
+}
+
 export const clamp01 = (value: number) =>
   value < 0 ? 0 : value > 1 ? 1 : value;

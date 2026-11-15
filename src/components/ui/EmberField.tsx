@@ -2,18 +2,18 @@
 
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
-import {
-  ASH_HUES,
-  buildEmberSprite,
-  clamp01,
-} from "@/lib/ember";
+import { FIRE_HUES, buildEmberFleck, buildEmberSprite, clamp01 } from "@/lib/ember";
 
 /**
- * Ash falling through a room with no fire in it.
+ * Embers loose in the room around the mark.
  *
- * The same sprite trick as the mark's flame — one drawImage per mote — but the
- * tints run cold, the drift is slower, and nothing here is allowed to glow.
- * The only warmth on the page belongs to the Darksign.
+ * Drawn as irregular flecks rather than soft circles: an ember is a flake of
+ * burning matter with a hot, uneven core, so a smooth radial blob reads as a
+ * bokeh light and never as one. They spawn at the floor as white-hot chips,
+ * rise on the draught, tumble, gutter, and cool to deep red before they go out.
+ *
+ * A handful of out-of-focus embers ride behind them — the same fire, further
+ * from the lens — which is what stops the field looking like a flat starfield.
  */
 
 type Layer = {
@@ -22,13 +22,15 @@ type Layer = {
   speed: [number, number];
   alpha: [number, number];
   sway: [number, number];
+  soft: boolean;
 };
 
 /** Far → near. Depth is sold by size, speed and opacity together. */
 const LAYERS: Layer[] = [
-  { weight: 0.5, size: [4, 8], speed: [0.04, 0.12], alpha: [0.12, 0.26], sway: [0.03, 0.1] },
-  { weight: 0.32, size: [8, 14], speed: [0.13, 0.3], alpha: [0.18, 0.4], sway: [0.06, 0.2] },
-  { weight: 0.18, size: [14, 24], speed: [0.3, 0.66], alpha: [0.26, 0.55], sway: [0.1, 0.3] },
+  { weight: 0.46, size: [4, 8], speed: [0.1, 0.26], alpha: [0.5, 0.78], sway: [0.04, 0.14], soft: false },
+  { weight: 0.32, size: [6, 11], speed: [0.16, 0.4], alpha: [0.6, 0.88], sway: [0.08, 0.24], soft: false },
+  { weight: 0.16, size: [10, 18], speed: [0.24, 0.52], alpha: [0.62, 0.95], sway: [0.12, 0.32], soft: false },
+  { weight: 0.06, size: [26, 44], speed: [0.06, 0.18], alpha: [0.07, 0.15], sway: [0.05, 0.16], soft: true },
 ];
 
 type Particle = {
@@ -40,10 +42,13 @@ type Particle = {
   phase: number;
   freq: number;
   sway: number;
+  angle: number;
+  spin: number;
+  aspect: number;
   layer: number;
 };
 
-export default function AshField({ className = "" }: { className?: string }) {
+export default function EmberField({ className = "" }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const reduced = useReducedMotion();
 
@@ -53,9 +58,11 @@ export default function AshField({ className = "" }: { className?: string }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const sprites = ASH_HUES.map((hue) => buildEmberSprite(hue));
+    // Sharp flecks for the near field, soft sprites for the deep ones.
+    const sharp = FIRE_HUES.map((hue) => buildEmberFleck(hue, 40));
+    const soft = FIRE_HUES.map((hue) => buildEmberSprite(hue, 64));
     const mobile = window.matchMedia("(max-width: 767px)").matches;
-    const total = mobile ? 58 : 150;
+    const total = mobile ? 115 : 285;
 
     let width = 0;
     let height = 0;
@@ -78,8 +85,11 @@ export default function AshField({ className = "" }: { className?: string }) {
         size: random(config.size),
         alpha: random(config.alpha),
         phase: Math.random() * Math.PI * 2,
-        freq: 0.0006 + Math.random() * 0.0012,
+        freq: 0.0006 + Math.random() * 0.0014,
         sway: random(config.sway),
+        angle: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * 0.0016,
+        aspect: 0.7 + Math.random() * 0.7,
         layer,
       };
     };
@@ -104,20 +114,42 @@ export default function AshField({ className = "" }: { className?: string }) {
     };
 
     const paint = (particle: Particle, time: number) => {
-      // Cool with altitude: 0 at the floor, 1 near the ceiling.
-      const cool = clamp01((particle.y - height * 0.04) / (height * 0.78));
-      const emerge = clamp01((height - particle.y) / 140);
+      // Heat runs from the floor up: born white, dying red.
+      const heat = clamp01(particle.y / Math.max(1, height));
+      const emerge = clamp01((height - particle.y) / 120);
+      // Embers gutter rather than glow steadily.
       const flicker =
-        0.82 + 0.18 * Math.sin(time * 0.0032 + particle.phase * 3.1);
+        0.78 +
+        0.16 * Math.sin(time * 0.004 + particle.phase * 3.1) +
+        0.1 * Math.sin(time * 0.011 + particle.phase * 7.7);
       const alpha =
-        particle.alpha * emerge * (1 - 0.62 * cool) * flicker;
+        particle.alpha * emerge * (0.45 + 0.55 * heat) * Math.max(0, flicker);
 
       if (alpha <= 0.004) return;
 
-      const tint = sprites[Math.min(sprites.length - 1, Math.floor(cool * 4))];
-      const size = particle.size * (1 - 0.25 * cool);
+      // Biased hot: most of the field is live fire, only what has climbed far
+      // enough has gone to slag.
+      const index = Math.min(3, Math.floor((1 - heat) * 3.1));
+      const set = LAYERS[particle.layer].soft ? soft : sharp;
+      const size = particle.size * (1 - 0.2 * (1 - heat));
+
+      ctx.save();
+      ctx.translate(particle.x, particle.y);
+      ctx.rotate(particle.angle);
+      ctx.scale(particle.aspect, 1);
+
       ctx.globalAlpha = alpha;
-      ctx.drawImage(tint, particle.x - size / 2, particle.y - size / 2, size, size);
+      ctx.drawImage(set[index], -size / 2, -size / 2, size, size);
+
+      // The burning point. A fleck alone reads as a smudge; a hot pinpoint
+      // inside it is what makes the eye call it an ember.
+      if (!LAYERS[particle.layer].soft) {
+        const core = Math.max(1.4, size * 0.4);
+        ctx.globalAlpha = Math.min(1, alpha * 1.45);
+        ctx.drawImage(sharp[0], -core / 2, -core / 2, core, core);
+      }
+
+      ctx.restore();
     };
 
     const draw = (time: number) => {
@@ -146,6 +178,7 @@ export default function AshField({ className = "" }: { className?: string }) {
         particle.x +=
           (wind + Math.sin(clock * particle.freq + particle.phase) * particle.sway) *
           scale;
+        particle.angle += particle.spin * scale;
 
         const offTop = particle.y < -80;
         const offSide = particle.x < -120 || particle.x > width + 120;
@@ -197,7 +230,7 @@ export default function AshField({ className = "" }: { className?: string }) {
     <canvas
       ref={canvasRef}
       aria-hidden
-      className={`pointer-events-none fixed inset-0 z-[1] opacity-55 ${className}`}
+      className={`pointer-events-none fixed inset-0 z-[1] opacity-90 ${className}`}
     />
   );
 }
