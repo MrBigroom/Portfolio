@@ -226,14 +226,14 @@ function DarksignFire({ className = "" }: { className?: string }) {
         ctx.globalAlpha = 1;
       }
 
-      ctx.strokeStyle = `rgba(228, 102, 28, ${0.9 * breath})`;
+      ctx.strokeStyle = `rgba(214, 88, 22, ${0.5 * breath})`;
       ctx.lineWidth = 2.6 * scale;
       ctx.stroke(path);
 
-      // Warm and slightly soft: a bare cream line reads as a drawn circle
-      // where the flame thins over it.
-      ctx.strokeStyle = `rgba(255, 214, 150, ${0.85 * breath})`;
-      ctx.lineWidth = 1.3 * scale;
+      // Dim on purpose. A bright core turns the mark into a drawn circle and
+      // fights the flame that is supposed to be coming off it.
+      ctx.strokeStyle = `rgba(255, 186, 116, ${0.26 * breath})`;
+      ctx.lineWidth = 1.1 * scale;
       ctx.stroke(path);
 
       // Flame licking off it.

@@ -51,7 +51,9 @@ export default function Hero() {
       </div>
 
       {/* The mark, and the only fire left on the page. */}
-      <div className="pointer-events-none absolute right-[-6%] top-1/2 hidden h-[30rem] w-[30rem] -translate-y-1/2 opacity-95 md:block lg:right-[0%] lg:h-[32rem] lg:w-[32rem]">
+      {/* Nudged below the geometric centre: the nav covers the top of the
+          section, so centring on the box reads as sitting high. */}
+      <div className="pointer-events-none absolute right-[-6%] top-[calc(50%+2.5rem)] hidden h-[30rem] w-[30rem] -translate-y-1/2 opacity-95 md:block lg:right-[0%] lg:h-[32rem] lg:w-[32rem]">
         <Darksign className="h-full w-full" />
       </div>
 
